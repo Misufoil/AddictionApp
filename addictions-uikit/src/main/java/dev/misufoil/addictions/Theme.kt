@@ -1,15 +1,23 @@
-package dev.misufoil.addictionapp.ui.theme
+package dev.misufoil.addictions
 
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -34,7 +42,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun AddictionAppTheme(
+fun AddictionTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -49,10 +57,45 @@ fun AddictionAppTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val view = LocalView.current
+
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = content
     )
+}
+
+object AddictionTheme {
+    /**
+     * Retrieves the current [ColorScheme] at the call site's position in the hierarchy.
+     */
+    val colorScheme: ColorScheme
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme
+
+    /**
+     * Retrieves the current [Typography] at the call site's position in the hierarchy.
+     */
+    val typography: Typography
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.typography
+
+    /**
+     * Retrieves the current [Shapes] at the call site's position in the hierarchy.
+     */
+    val shapes: Shapes
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.shapes
 }

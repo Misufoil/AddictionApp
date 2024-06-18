@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kapt)
+    alias(libs.plugins.compose.compiler)
 
 }
 
@@ -36,9 +37,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
 }
 
 dependencies {
@@ -57,6 +55,7 @@ dependencies {
 
     implementation(project(":core-utils"))
     implementation(project(":addictions-data"))
+    implementation(project(":addictions-uikit"))
 
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)

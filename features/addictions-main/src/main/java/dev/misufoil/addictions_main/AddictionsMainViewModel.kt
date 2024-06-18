@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.misufoil.addictions_data.RequestResult
-import dev.misufoil.addictions_main.models.UIAddictions
+import dev.misufoil.addictions_main.models.AddictionUI
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -23,17 +23,17 @@ internal class AddictionsMainViewModel @Inject constructor(
 }
 
 
-private fun RequestResult<List<UIAddictions>>.toState(): State {
+private fun RequestResult<List<AddictionUI>>.toState(): State {
     return when (this) {
-        is RequestResult.Error -> State.Error()
+        is RequestResult.Error -> State.Error(data)
         is RequestResult.InProgress -> State.Loading(data)
-        is RequestResult.Success -> State.Succeess(checkNotNull(data))
+        is RequestResult.Success -> State.Success(data)
     }
 }
 
-sealed class State {
-    object None : State()
-    class Loading(val addictions: List<UIAddictions>? = null) : State()
-    class Error(val addictions: List<UIAddictions>? = null) : State()
-    class Succeess(val addictions: List<UIAddictions>) : State()
+internal sealed class State(val addictions: List<AddictionUI>?) {
+    data object None : State(addictions = null)
+    class Loading(addictions: List<AddictionUI>? = null) : State(addictions)
+    class Error(addictions: List<AddictionUI>? = null) : State(addictions)
+    class Success(addictions: List<AddictionUI>) : State(addictions)
 }

@@ -5,14 +5,15 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import dev.misufoil.core_utils.models.AddictionTypes
 import dev.misufoil.database.models.AddictionDBO
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AddictionDao {
 
-//    @Query("SELECT * FROM AddictionDBO")
-//    suspend fun getAll(): List<AddictionDBO>
+    @Query("SELECT * FROM AddictionDBO")
+    suspend fun getAll(): List<AddictionDBO>
 
     @Query("SELECT * FROM AddictionDBO")
     fun observeAll(): Flow<List<AddictionDBO>>
@@ -22,5 +23,8 @@ interface AddictionDao {
 
     @Delete
     suspend fun remove(addiction: AddictionDBO)
+
+    @Query("SELECT * FROM AddictionDBO WHERE type = :type")
+    suspend fun getByType(type: AddictionTypes): AddictionDBO
 
 }

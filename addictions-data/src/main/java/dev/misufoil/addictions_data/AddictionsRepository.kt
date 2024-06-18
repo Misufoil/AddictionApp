@@ -1,16 +1,21 @@
 package dev.misufoil.addictions_data
 
 import dev.misufoil.addictions_data.model.Addiction
+import dev.misufoil.core_utils.Logger
 import dev.misufoil.database.AddictionDatabase
 import dev.misufoil.database.models.AddictionDBO
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
 class AddictionsRepository @Inject constructor(
-    private val database: AddictionDatabase
+    private val database: AddictionDatabase,
+    private val logger: Logger
 ) {
 
     fun getAll(): Flow<RequestResult<List<Addiction>>> {
@@ -20,9 +25,46 @@ class AddictionsRepository @Inject constructor(
     }
 
     private fun getAllFromLocalDb(): Flow<RequestResult<List<Addiction>>> {
+
+
+        //3
+//        val dbRequest = database.addictionDao::getAll.asFlow()
+//            .map { RequestResult.Success(it) }
+//            .catch {
+//                RequestResult.Error<List<AddictionDBO>>(error = it)
+//                logger.e(LOG_TAG, "Error getting from database. Cause = $it")
+//            }
+//
+//        val start = flowOf<RequestResult<List<AddictionDBO>>>(RequestResult.InProgress())
+//
+//        return merge(dbRequest, start)
+//            .map { result ->
+//                result.map { addictionsDBO ->
+//                    addictionsDBO.map { it.toAddiction() }
+//                }
+//            }
+
+// 2        return flow {
+//            emit(RequestResult.InProgress())
+//            database.addictionDao.observeAll()
+//                .catch {
+//                    RequestResult.Error<List<AddictionDBO>>(error = it)
+//                    logger.e(LOG_TAG, "Error getting from database. Cause = $it")
+//                }
+//                .collect{ addictionsDBO ->
+//                    val addictions = addictionsDBO.map { it.toAddiction() }
+//                    emit(RequestResult.Success(addictions))
+//                }
+//        }
+
+
         val dbRequest = database.addictionDao
             .observeAll()
-            .map { RequestResult.Success(it) }
+            .map<List<AddictionDBO>, RequestResult<List<AddictionDBO>>> { RequestResult.Success(it) }
+            .catch {
+                logger.e(LOG_TAG, "Error getting from database. Cause = $it")
+                emit(RequestResult.Error<List<AddictionDBO>>(error = it))
+            }
 
         val start = flowOf<RequestResult<List<AddictionDBO>>>(RequestResult.InProgress())
 
@@ -36,6 +78,10 @@ class AddictionsRepository @Inject constructor(
 
     suspend fun savaAddictionToLocalDb(addiction: Addiction) {
         database.addictionDao.insert(addiction.toAddictionDBO())
+    }
+
+    private companion object {
+        const val LOG_TAG = "AddictionRepository"
     }
 
 }

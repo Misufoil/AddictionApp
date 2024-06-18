@@ -4,15 +4,15 @@ import dev.misufoil.addictions_data.AddictionsRepository
 import dev.misufoil.addictions_data.RequestResult
 import dev.misufoil.addictions_data.map
 import dev.misufoil.addictions_data.model.Addiction
-import dev.misufoil.addictions_main.models.UIAddictions
+import dev.misufoil.addictions_main.models.AddictionUI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetAllAddictionsUseCase @Inject constructor(
+internal class GetAllAddictionsUseCase @Inject constructor(
     private val repository: AddictionsRepository
 ) {
-    operator fun invoke(): Flow<RequestResult<List<UIAddictions>>> {
+    operator fun invoke(): Flow<RequestResult<List<AddictionUI>>> {
         return repository.getAll()
             .map { requestResult ->
                 requestResult.map { addictions ->
@@ -22,8 +22,8 @@ class GetAllAddictionsUseCase @Inject constructor(
     }
 }
 
-private fun Addiction.toUIAddiction(): UIAddictions {
-    return UIAddictions(
+private fun Addiction.toUIAddiction(): AddictionUI {
+    return AddictionUI(
         type = type,
         date = date,
         time = time,

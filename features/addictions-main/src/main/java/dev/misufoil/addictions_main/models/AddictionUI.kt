@@ -5,7 +5,7 @@ import dev.misufoil.core_utils.models.DaysPerWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
-data class UIAddictions (
+internal data class AddictionUI (
     var type: AddictionTypes,
     var date: LocalDate,
     val time: LocalTime,

@@ -6,6 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dev.misufoil.core_utils.AndroidLogcatLogger
+import dev.misufoil.core_utils.AppDispatchers
+import dev.misufoil.core_utils.Logger
 import dev.misufoil.database.AddictionDatabase
 import dev.misufoil.database.addictionsDataBase
 import javax.inject.Singleton
@@ -19,4 +22,11 @@ object AppModule {
     fun provideDatabase(@ApplicationContext context: Context): AddictionDatabase {
         return addictionsDataBase(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideAppCoroutineDispatchers(): AppDispatchers = AppDispatchers()
+
+    @Provides
+    fun provideLogger(): Logger = AndroidLogcatLogger()
 }
