@@ -25,6 +25,6 @@ interface AddictionDao {
     suspend fun remove(addiction: AddictionDBO)
 
     @Query("SELECT * FROM AddictionDBO WHERE type = :type")
-    suspend fun getByType(type: AddictionTypes): AddictionDBO
+    suspend fun getByType(type: AddictionTypes): AddictionDBO?
 
 }

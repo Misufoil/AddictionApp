@@ -12,10 +12,17 @@
             <option value="$PROJECT_DIR$/addictions-data" />
             <option value="$PROJECT_DIR$/addictions-uikit" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core-utils" />
+            <option value="$PROJECT_DIR$/core/feature-api" />
             <option value="$PROJECT_DIR$/database" />
             <option value="$PROJECT_DIR$/features" />
-            <option value="$PROJECT_DIR$/features/addictions-main" />
+            <option value="$PROJECT_DIR$/features/addictions-details-api" />
+            <option value="$PROJECT_DIR$/features/addictions-details-impl" />
+            <option value="$PROJECT_DIR$/features/addictions-edit-api" />
+            <option value="$PROJECT_DIR$/features/addictions-edit-impl" />
+            <option value="$PROJECT_DIR$/features/addictions-home-api" />
+            <option value="$PROJECT_DIR$/features/addictions-home-impl" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -1,18 +1,19 @@
 [versions]
-agp = "8.4.1"
+agp = "8.4.2"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-androidx-lifecycle = "2.8.1"
+androidx-lifecycle = "2.8.2"
 activityCompose = "1.9.0"
-composeBom = "2024.05.00"
+composeBom = "2024.06.00"
 kotlinx-coroutines = "1.8.1"
 room = "2.6.1"
 ksp = "2.0.0-1.0.21"
 dagger = "2.51.1"
 jakarta-inject = "2.0.1"
+compose-navigation = "2.7.7"
 
 appcompat = "1.7.0"
 material = "1.12.0"
@@ -40,6 +41,9 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 
 kotlinx-courutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-courutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }

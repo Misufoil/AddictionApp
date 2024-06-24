@@ -59,9 +59,11 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
 
+    implementation(libs.androidx.navigation.compose)
+
     implementation(project(":addictions-data"))
     implementation(project(":database"))
     implementation(project(":core-utils"))
-    implementation(project(":features:addictions-main"))
+    implementation(project(":features:addictions-home-impl"))
     implementation(project(":addictions-uikit"))
 }

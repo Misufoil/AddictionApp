@@ -25,9 +25,38 @@ class AddictionsRepository @Inject constructor(
     }
 
     private fun getAllFromLocalDb(): Flow<RequestResult<List<Addiction>>> {
+        val dbRequest = database.addictionDao
+            .observeAll()
+            .map<List<AddictionDBO>, RequestResult<List<AddictionDBO>>> { RequestResult.Success(it) }
+            .catch {
+                logger.e(LOG_TAG, "Error getting from database. Cause = $it")
+                emit(RequestResult.Error<List<AddictionDBO>>(error = it))
+            }
+
+        val start = flowOf<RequestResult<List<AddictionDBO>>>(RequestResult.InProgress())
+
+        return merge(dbRequest, start)
+            .map { result ->
+                result.map { addictionsDBO ->
+                    addictionsDBO.map { it.toAddiction() }
+                }
+            }
+    }
+
+    suspend fun savaAddictionToLocalDb(addiction: Addiction) {
+        database.addictionDao.insert(addiction.toAddictionDBO())
+    }
+
+    private companion object {
+        const val LOG_TAG = "AddictionRepository"
+    }
+
+}
 
 
-        //3
+
+//3
+//getAllFromLocalDb
 //        val dbRequest = database.addictionDao::getAll.asFlow()
 //            .map { RequestResult.Success(it) }
 //            .catch {
@@ -56,32 +85,3 @@ class AddictionsRepository @Inject constructor(
 //                    emit(RequestResult.Success(addictions))
 //                }
 //        }
-
-
-        val dbRequest = database.addictionDao
-            .observeAll()
-            .map<List<AddictionDBO>, RequestResult<List<AddictionDBO>>> { RequestResult.Success(it) }
-            .catch {
-                logger.e(LOG_TAG, "Error getting from database. Cause = $it")
-                emit(RequestResult.Error<List<AddictionDBO>>(error = it))
-            }
-
-        val start = flowOf<RequestResult<List<AddictionDBO>>>(RequestResult.InProgress())
-
-        return merge(dbRequest, start)
-            .map { result ->
-                result.map { addictionsDBO ->
-                    addictionsDBO.map { it.toAddiction() }
-                }
-            }
-    }
-
-    suspend fun savaAddictionToLocalDb(addiction: Addiction) {
-        database.addictionDao.insert(addiction.toAddictionDBO())
-    }
-
-    private companion object {
-        const val LOG_TAG = "AddictionRepository"
-    }
-
-}
