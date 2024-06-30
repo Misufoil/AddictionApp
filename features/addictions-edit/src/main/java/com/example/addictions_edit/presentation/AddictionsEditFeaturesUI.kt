@@ -217,6 +217,7 @@ fun ModalBottomSheetComponent(onDismissRequest: () -> Unit, onItemSelected: (Str
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
+        modifier = Modifier.fillMaxSize(),
         onDismissRequest = {
             onDismissRequest()
         },
