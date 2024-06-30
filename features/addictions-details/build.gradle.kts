@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room)
 }
 
 android {
-    namespace = "dev.misufoil.database"
+    namespace = "com.example.addictions_details"
     compileSdk = 34
 
     defaultConfig {
@@ -26,24 +24,21 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_1_8
         sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
-
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
-
     kotlinOptions {
         jvmTarget = "1.8"
     }
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
-    // To use Kotlin Symbol Processing (KSP)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
     implementation(project(":core-utils"))
+    implementation(project(":addictions-data"))
+    implementation(project(":addictions-uikit"))
 }

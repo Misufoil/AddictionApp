@@ -2,6 +2,7 @@ package dev.misufoil.addictions_data
 
 import dev.misufoil.addictions_data.model.Addiction
 import dev.misufoil.core_utils.Logger
+import dev.misufoil.core_utils.models.AddictionTypes
 import dev.misufoil.database.AddictionDatabase
 import dev.misufoil.database.models.AddictionDBO
 import jakarta.inject.Inject
@@ -41,6 +42,19 @@ class AddictionsRepository @Inject constructor(
                     addictionsDBO.map { it.toAddiction() }
                 }
             }
+    }
+
+    suspend fun getAddictionByType(type: AddictionTypes): RequestResult<Addiction> {
+        return try {
+            val dbRequest = database.addictionDao.getByType(type)
+            if (dbRequest != null) {
+                RequestResult.Success(dbRequest.toAddiction())
+            } else {
+                RequestResult.Error(null, NoSuchElementException("Addiction not found"))
+            }
+        } catch (e: Exception) {
+            RequestResult.Error(null, e)
+        }
     }
 
     suspend fun savaAddictionToLocalDb(addiction: Addiction) {

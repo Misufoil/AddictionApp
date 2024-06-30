@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.misufoil.addictions.theme.AddictionTheme
-import dev.misufoil.addictions_home.AddictionsHomeScreen
+import dev.misufoil.addictions_home.presentation.AddictionsHomeScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -23,7 +23,9 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    AddictionsHomeScreen(navController = navController)
+                    AddictionsHomeScreen(onItemClick = { /*TODO*/ }) {
+                        
+                    }
                 }
             }
         }
