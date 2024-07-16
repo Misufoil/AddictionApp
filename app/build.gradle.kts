@@ -64,6 +64,8 @@ dependencies {
     implementation(project(":addictions-data"))
     implementation(project(":database"))
     implementation(project(":core-utils"))
-    implementation(project(":features:addictions-home"))
     implementation(project(":addictions-uikit"))
+    implementation(project(":features:addictions-home"))
+    implementation(project(":features:addictions-add-edit"))
+    implementation(project(":features:addictions-details"))
 }

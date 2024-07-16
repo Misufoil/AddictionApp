@@ -12,10 +12,11 @@ internal class GetAddictionByTypeUseCase @Inject constructor(
     private val repository: AddictionsRepository
 ) {
     suspend operator fun invoke(type: AddictionTypes): RequestResult<AddictionUI> {
-        return repository.getAddictionByType(type)
+        val x = repository.getAddictionByType(type)
             .map { addictions ->
                 addictions.toUIAddiction()
             }
+        return x
     }
 }
 

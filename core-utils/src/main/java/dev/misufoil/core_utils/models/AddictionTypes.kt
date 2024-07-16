@@ -13,4 +13,10 @@ enum class AddictionTypes(val description: String) {
     VIDEO_GAMES("Video games");
 
     override fun toString() = description
+
+    companion object {
+        fun fromDescription(description: String): AddictionTypes? {
+            return entries.find { it.description.equals(description, ignoreCase = true) }
+        }
+    }
 }

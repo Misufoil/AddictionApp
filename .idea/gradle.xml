@@ -16,8 +16,8 @@
             <option value="$PROJECT_DIR$/core-utils" />
             <option value="$PROJECT_DIR$/database" />
             <option value="$PROJECT_DIR$/features" />
+            <option value="$PROJECT_DIR$/features/addictions-add-edit" />
             <option value="$PROJECT_DIR$/features/addictions-details" />
-            <option value="$PROJECT_DIR$/features/addictions-edit" />
             <option value="$PROJECT_DIR$/features/addictions-home" />
           </set>
         </option>

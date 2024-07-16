@@ -32,9 +32,9 @@ private fun RequestResult<List<AddictionUI>>.toState(): State {
     }
 }
 
-internal sealed class State(val addictions: List<AddictionUI>?) {
+internal sealed class State(open val addictions: List<AddictionUI>?) {
     data object None : State(addictions = null)
     class Loading(addictions: List<AddictionUI>? = null) : State(addictions)
     class Error(addictions: List<AddictionUI>? = null) : State(addictions)
-    class Success(addictions: List<AddictionUI>) : State(addictions)
+    class Success(override val addictions: List<AddictionUI>) : State(addictions)
 }

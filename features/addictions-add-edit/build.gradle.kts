@@ -50,6 +50,10 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
 
+    implementation(libs.kotlinx.courutines.android)
+
+    implementation(libs.androidx.hilt)
+
     implementation(project(":core-utils"))
     implementation(project(":addictions-data"))
     implementation(project(":addictions-uikit"))
