@@ -1,5 +1,7 @@
 package com.example.addictions_edit.presentation.view
 
+import android.widget.TimePicker
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
@@ -35,9 +38,17 @@ import androidx.compose.ui.unit.sp
 import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.addictions.uikit.R
+import dev.misufoil.core_utils.date_time_utils.convertStringDateTimeToLong
+import dev.misufoil.core_utils.date_time_utils.convertStringDateToLong
+import dev.misufoil.core_utils.date_time_utils.convertStringTimeToLong
 import dev.misufoil.core_utils.models.AddictionTypes
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 internal fun TypeComponent(
@@ -76,6 +87,8 @@ internal fun TypeComponent(
 @ExperimentalMaterial3Api
 @Composable
 internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
+
+
     Text(
         text = "Дата и время начала",
         modifier = Modifier.padding(start = 8.dp, top = 4.dp),
@@ -135,7 +148,30 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
     }
 
     if (viewModel.showTimeDialog) {
-        TimePickerDialog(viewModel)
+        val context = LocalContext.current
+
+        TimePickerDialog(
+            onCancel = {
+                viewModel.showTimeDialogHide()
+            },
+            onConfirm = { timePickerState ->
+                val hour = timePickerState.hour
+                val minute = timePickerState.minute
+                val currentMillis = System.currentTimeMillis()
+
+                val maxDateTimeReached =
+                    convertStringDateTimeToLong(viewModel.date, "%02d:%02d".format(hour, minute))
+
+                if (maxDateTimeReached <= currentMillis) {
+                    viewModel.onTimeChange(Pair(hour, minute))
+                } else {
+                    Toast.makeText(context, "Выбранное время еще не наступило", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                viewModel.showTimeDialogHide()
+            },
+            time = viewModel.time
+        )
     }
 }
 
@@ -144,7 +180,7 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
 @Composable
 internal fun FrequencyOfUseComponent(viewModel: AddictionAddEditViewModel) {
     Text(
-        text = "Использование до отслеживания",
+        text = "Частота употребления",
         modifier = Modifier.padding(start = 8.dp, top = 4.dp),
         style = AddictionTheme.typography.titleLarge
     )

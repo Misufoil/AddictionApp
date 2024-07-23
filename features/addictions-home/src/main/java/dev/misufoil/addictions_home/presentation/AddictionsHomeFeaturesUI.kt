@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -111,7 +112,7 @@ private fun ErrorMessage(state: State.Error) {
 private fun ProgressIndicator(state: State.Loading) {
     Box(
         Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(8.dp),
         contentAlignment = Alignment.Center,
     ) {
@@ -204,7 +205,7 @@ internal fun Addiction(
                 .size(100.dp),
             initialValue = addictionDate,
             primaryColor = Color.Green,
-            secondaryColor = Color.Red,
+            secondaryColor = Color.LightGray,
             circleRadius = 100f,
             onPositionChange = {}
         )

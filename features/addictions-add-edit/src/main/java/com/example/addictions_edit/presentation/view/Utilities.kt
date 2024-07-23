@@ -3,6 +3,7 @@ package com.example.addictions_edit.presentation.view
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,7 +34,7 @@ internal fun ProgressIndicator(
     Column(modifier = Modifier.padding(padding)) {
         Box(
             Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(8.dp),
             contentAlignment = Alignment.Center,
         ) {

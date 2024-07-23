@@ -101,7 +101,7 @@ private fun ProgressIndicator(
     Column(modifier = Modifier.padding(padding)) {
         Box(
             Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(8.dp),
             contentAlignment = Alignment.Center,
         ) {

@@ -12,17 +12,13 @@ import com.example.addictions_edit.usecase.GetAddictionByTypeUseCase
 import com.example.addictions_edit.usecase.SavaAddictionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.misufoil.addictions_data.RequestResult
+import dev.misufoil.core_utils.date_time_utils.convertDateToString
+import dev.misufoil.core_utils.date_time_utils.convertLongToStringDate
+import dev.misufoil.core_utils.date_time_utils.formatTime
+import dev.misufoil.core_utils.date_time_utils.getCurrentTimeString
 import dev.misufoil.core_utils.models.AddictionTypes
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -152,18 +148,6 @@ internal class AddictionAddEditViewModel @Inject constructor(
         timesInDay = addiction.timesInDay
     }
 
-//    fun initUi() {
-//        state.addiction.let {
-//            if (it != null) {
-//                type = it.type
-//                date = it.date
-//                time = it.time
-//                daysPerWeek = it.daysPerWeek
-//                timesInDay = it.timesInDay.toString()
-//            }
-//        }
-//    }
-
     private fun RequestResult<AddictionUI>.toState(): State {
         return when (this) {
             is RequestResult.Error -> State.Error(data)
@@ -179,6 +163,30 @@ internal class AddictionAddEditViewModel @Inject constructor(
         class Success(override val addiction: AddictionUI) : State(addiction)
     }
 
+    suspend fun saveAddiction() {
+        val saveAddiction = AddictionUI(
+            type = type,
+            date = date,
+            time = time,
+            daysPerWeek = daysPerWeek,
+            timesInDay = timesInDay
+        )
+        savaAddictionUseCase.get().invoke(saveAddiction)
+    }
+
+
+    //    fun initUi() {
+//        state.addiction.let {
+//            if (it != null) {
+//                type = it.type
+//                date = it.date
+//                time = it.time
+//                daysPerWeek = it.daysPerWeek
+//                timesInDay = it.timesInDay.toString()
+//            }
+//        }
+//    }
+
 //    private fun getCurrentDateToString(): String {
 //
 ////        val dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
@@ -190,74 +198,6 @@ internal class AddictionAddEditViewModel @Inject constructor(
 //
 ////        return SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(currentDate)
 //    }
-
-
-
-    internal fun convertDateToString(date: LocalDate): String {
-        val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-        return date.format(dateFormatter)
-    }
-
-    internal fun convertLongToStringDate(time: Long): String {
-        //    val date = Date(time)
-        //    val format = SimpleDateFormat.getDateInstance()
-        //    return format.format(date)
-
-        //val instant = Instant.ofEpochMilli(time)
-        // val date = instant.atZone(ZoneId.systemDefault()).toLocalDate()
-        //val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        // return date.format(dateFormatter)}
-
-        val instant = Instant.ofEpochMilli(time)
-        val date = instant.atZone(ZoneId.systemDefault()).toLocalDate()
-        return convertDateToString(date)
-    }
-
-    internal fun convertStringDateToLong(strTime: String): Long {
-        val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-        val date = LocalDate.parse(strTime, dateFormatter)
-        val dateTime = date.atStartOfDay()
-        return dateTime.toInstant(ZoneOffset.UTC).toEpochMilli()
-
-//        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-//        //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy HH:mm", Locale.getDefault())
-//        //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm", Locale.getDefault())
-
-//        val time = LocalTime.parse(addiction.time, timeFormatter)
-    }
-
-    internal fun convertStringTimeToLong(timeStr: String): Long {
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        val time = LocalTime.parse(timeStr, timeFormatter)
-        // Используем текущую дату для создания LocalDateTime
-        val currentDate = LocalDate.now()
-        val dateTime = LocalDateTime.of(currentDate, time)
-        // Преобразуем в миллисекунды с начала эпохи
-        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
-
-    private fun getCurrentTimeString(): String {
-        val currentTime = LocalTime.now()
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        return currentTime.format(timeFormatter)
-    }
-
-    private fun formatTime(hour: Int, minute: Int): String {
-        return String.format(locale = Locale.ENGLISH, "%02d:%02d", hour, minute)
-    }
-
-
-
-    suspend fun saveAddiction() {
-        val saveAddiction = AddictionUI(
-            type = type,
-            date = date,
-            time = time,
-            daysPerWeek = daysPerWeek,
-            timesInDay = timesInDay
-        )
-        savaAddictionUseCase.get().invoke(saveAddiction)
-    }
 
 //    fun validateInput(): Boolean {
 //        return when {
