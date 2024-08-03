@@ -61,6 +61,10 @@ class AddictionsRepository @Inject constructor(
         database.addictionDao.insert(addiction.toAddictionDBO())
     }
 
+    suspend fun removeAddictionToLocalDb(addiction: Addiction) {
+        database.addictionDao.remove(addiction.toAddictionDBO())
+    }
+
     private companion object {
         const val LOG_TAG = "AddictionRepository"
     }

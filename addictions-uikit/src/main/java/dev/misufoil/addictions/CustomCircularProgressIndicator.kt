@@ -1,9 +1,10 @@
-package dev.misufoil.addictions_home.presentation
+package dev.misufoil.addictions
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,8 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.misufoil.addictions.uikit.R
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.LocalDateTime
@@ -36,8 +41,11 @@ fun CustomCircularProgressIndicator(
     primaryColor: Color,
     secondaryColor: Color,
     circleRadius: Float,
+    textStyleInCircle: TextStyle,
+    textStyleUnderCircle: TextStyle,
     onPositionChange: (LocalDateTime) -> Unit // Change this to LocalDateTime
 ) {
+    val context = LocalContext.current
     // Define the milestones
     val milestones = listOf(
         Duration.ofDays(0),
@@ -81,10 +89,12 @@ fun CustomCircularProgressIndicator(
     }
 
     val milestoneText = if (nextMilestone != null) {
-        "Цель: ${nextMilestone.toDays()} дней"
+         stringResource(id = R.string.goal_days, nextMilestone.toDays())
     } else {
-        "Цель достигнута"
+        stringResource(id = R.string.goal_achieved)
     }
+
+    var textSize by remember { mutableStateOf(24.sp) }
 
     Column {
         Box(
@@ -177,16 +187,15 @@ fun CustomCircularProgressIndicator(
             ) {
                 Text(
                     text = formatDuration(timePassed),
-                    fontSize = 12.sp,
-                    color = Color.White
+                    style = textStyleInCircle
                 )
             }
         }
+
         Text(
             text = milestoneText,
-            fontSize = 16.sp,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            style = textStyleUnderCircle,
         )
     }
 }

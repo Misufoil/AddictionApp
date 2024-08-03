@@ -4,18 +4,24 @@ package com.example.addictions_edit.presentation.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
@@ -69,7 +75,6 @@ private fun AddictionScreen(
     padding: PaddingValues
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize().padding(padding),
@@ -81,18 +86,22 @@ private fun AddictionScreen(
         )
         DateAndTimeComponent(viewModel)
         FrequencyOfUseComponent(viewModel)
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+
+        ElevatedButton(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             onClick = {
                 coroutineScope.launch {
                     viewModel.saveAddiction()
                     onPopBackStack()
                 }
-            }
+            },
         ) {
-            Text("Сохранить")
+            Icon(
+                imageVector = ImageVector.vectorResource(dev.misufoil.addictions.uikit.R.drawable.baseline_save_24),
+                contentDescription = stringResource(id = dev.misufoil.addictions.uikit.R.string.save_habit)
+            )
+            Spacer(modifier = Modifier.size(4.dp))
+            Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.save_button))
         }
     }
 

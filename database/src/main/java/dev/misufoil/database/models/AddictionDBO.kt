@@ -12,4 +12,3 @@ data class AddictionDBO(
     @ColumnInfo("daysPerWeek") val daysPerWeek: Int,
     @ColumnInfo("timesInDay") val timesInDay: Int
 )
-

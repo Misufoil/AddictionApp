@@ -39,9 +39,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.addictions_edit.R
 import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.core_utils.date_time_utils.convertStringDateToLong
@@ -73,14 +75,14 @@ internal fun DatePickerDialog(viewModel: AddictionAddEditViewModel) {
                         viewModel.showDateDialogHide()
                     }
                 ) {
-                    Text(text = "ОК")
+                    Text(text = stringResource(id = dev.misufoil.addictions.uikit.R.string.ok))
                 }
             },
             dismissButton = {
                 Button(
                     onClick = { viewModel.showDateDialogHide() }
                 ) {
-                    Text(text = "Отмена")
+                    Text(text = stringResource(id = dev.misufoil.addictions.uikit.R.string.cancel))
                 }
             },
         ) {
@@ -97,7 +99,7 @@ internal fun DatePickerDialog(viewModel: AddictionAddEditViewModel) {
 fun TimePickerDialog(
     time: String,
     onCancel: () -> Unit,
-    onConfirm: (TimePickerState) -> Unit,
+    onConfirm:  (TimePickerState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var mode: DisplayMode by remember { mutableStateOf(DisplayMode.Picker) }
@@ -112,7 +114,7 @@ fun TimePickerDialog(
     PickerDialog(
         modifier = modifier,
         onDismissRequest = onCancel,
-        title = { Text("Select hour") },
+        title = { Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.select_time)) },
         buttons = {
             DisplayModeToggleButton(
                 displayMode = mode,
@@ -120,10 +122,10 @@ fun TimePickerDialog(
             )
             Spacer(Modifier.weight(1f))
             TextButton(onClick = onCancel) {
-                Text("Cancel")
+                Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.cancel))
             }
             TextButton(onClick = { onConfirm(timeState) }) {
-                Text("Confirm")
+                Text( stringResource(id = dev.misufoil.addictions.uikit.R.string.ok))
             }
         },
     ) {
@@ -149,7 +151,7 @@ private fun DisplayModeToggleButton(
         ) {
             Icon(
                 painter = painterResource(id = dev.misufoil.addictions.uikit.R.drawable.baseline_keyboard_24),
-                contentDescription = "Переключить в режим ввода",
+                contentDescription = stringResource(id = dev.misufoil.addictions.uikit.R.string.input_mode),
                 //"Switch to input mode"
             )
         }
@@ -160,7 +162,7 @@ private fun DisplayModeToggleButton(
         ) {
             Icon(
                 painter = painterResource(id = dev.misufoil.addictions.uikit.R.drawable.baseline_schedule_24),
-                contentDescription = "Переключить в режим выбора",
+                contentDescription = stringResource(id = dev.misufoil.addictions.uikit.R.string.selection_mode),
                 //"Switch to picker mode"
             )
         }

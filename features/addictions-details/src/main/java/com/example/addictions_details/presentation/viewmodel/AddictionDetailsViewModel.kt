@@ -1,9 +1,10 @@
-package com.example.addictions_details.presentation
+package com.example.addictions_details.presentation.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.addictions_details.models.AddictionUI
+import com.example.addictions_details.usecase.DeleteAddictionUseCase
 import com.example.addictions_details.usecase.GetAddictionByTypeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.misufoil.addictions_data.RequestResult
@@ -15,6 +16,7 @@ import javax.inject.Provider
 @HiltViewModel
 internal class AddictionDetailsViewModel @Inject constructor(
     val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
+    val deleteAddictionUseCase: Provider<DeleteAddictionUseCase>,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -66,6 +68,10 @@ internal class AddictionDetailsViewModel @Inject constructor(
         class Loading(addiction: AddictionUI? = null) : State(addiction)
         class Error(addiction: AddictionUI? = null) : State(addiction)
         class Success(override val addiction: AddictionUI) : State(addiction)
+    }
+
+    suspend fun deleteAddiction() {
+        state.addiction?.let { deleteAddictionUseCase.get().invoke(it) }
     }
 
 }

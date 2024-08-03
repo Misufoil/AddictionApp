@@ -1,6 +1,5 @@
 package dev.misufoil.addictions_home.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,11 +28,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.misufoil.addictions.CustomCircularProgressIndicator
+import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.addictions_home.models.AddictionUI
 import dev.misufoil.core_utils.models.AddictionTypes
 import java.time.LocalDate
@@ -85,11 +89,12 @@ private fun AddictionsHomeContent(
         ) {
             when (currentState) {
                 is State.None -> Unit
-                is State.Error -> ErrorMessage(currentState)
-                is State.Loading -> ProgressIndicator(currentState)
+                is State.Error -> ErrorMessage(currentState, modifier)
+                is State.Loading -> ProgressIndicator(currentState, modifier)
                 is State.Success -> Addictions(
                     addictions = currentState.addictions,
-                    navigateToDetails
+                    navigateToDetails,
+                    modifier
                 )
             }
         }
@@ -97,9 +102,9 @@ private fun AddictionsHomeContent(
 }
 
 @Composable
-private fun ErrorMessage(state: State.Error) {
+private fun ErrorMessage(state: State.Error, modifier: Modifier) {
     Box(
-        Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
         contentAlignment = Alignment.Center
@@ -109,9 +114,9 @@ private fun ErrorMessage(state: State.Error) {
 }
 
 @Composable
-private fun ProgressIndicator(state: State.Loading) {
+private fun ProgressIndicator(state: State.Loading, modifier: Modifier) {
     Box(
-        Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(8.dp),
         contentAlignment = Alignment.Center,
@@ -126,12 +131,13 @@ private fun Addictions(
         AddictionsPreviewProvider::class,
         limit = 1
     ) addictions: List<AddictionUI>,
-    navigateToDetails: (String) -> Unit
+    navigateToDetails: (String) -> Unit,
+    modifier: Modifier
 ) {
     LazyColumn {
         items(addictions) { addiction ->
             key(addiction.type) {
-                Addiction(addiction, navigateToDetails)
+                Addiction(addiction, navigateToDetails, modifier)
             }
         }
     }
@@ -143,9 +149,9 @@ internal fun Addiction(
         AddictionPreviewProvider::class,
         limit = 1
     ) addiction: AddictionUI,
-    navigateToDetails: (String) -> Unit
+    navigateToDetails: (String) -> Unit,
+    modifier: Modifier
 ) {
-
     // Измените форматтер, чтобы он соответствовал формату addiction.date
     // val addictionDate = LocalDateTime.parse("${addiction.date}T00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
 //    val date = addiction.date
@@ -162,54 +168,64 @@ internal fun Addiction(
 
     val addictionDate = LocalDateTime.of(date, time)
 //    val addictionDate = LocalDateTime.parse(dateTimeString, dateTimeFormatter)
-
-    Row(
-        modifier = Modifier
+    Card(
+        modifier = modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .background(color = Color.Gray, shape = RoundedCornerShape(8.dp))
             .clickable {
                 navigateToDetails(addiction.type.description)
-            },
-        verticalAlignment = Alignment.CenterVertically
+            }
+            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.large),
+        colors = CardDefaults.cardColors(
+            containerColor = AddictionTheme.colorScheme.surfaceVariant,
+        ),
     ) {
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(1f)
-                .fillMaxWidth()
-                .background(color = Color.Gray, shape = RoundedCornerShape(8.dp))
-                .clickable {
-                    navigateToDetails(addiction.type.description)
-                }
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                text = addiction.type.toString(),
-                style = MaterialTheme.typography.headlineLarge,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.size(4.dp))
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
+//                    .background(color = Color.Gray, shape = RoundedCornerShape(8.dp))
+//                    .clickable {
+//                        navigateToDetails(addiction.type.description)
+//                    }
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    text = addiction.type.toString(),
+                    style = MaterialTheme.typography.headlineLarge,
+                    maxLines = 1
+                )
+                Spacer(modifier = Modifier.size(4.dp))
 
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                text = addiction.date,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    text = addiction.date,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1
+                )
+            }
+
+            CustomCircularProgressIndicator(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(100.dp),
+                initialValue = addictionDate,
+                primaryColor = Color.Green,
+                secondaryColor = Color.LightGray,
+                circleRadius = 100f,
+                textStyleInCircle = MaterialTheme.typography.bodySmall,
+                textStyleUnderCircle = MaterialTheme.typography.bodyLarge,
+                onPositionChange = {}
             )
         }
-
-        CustomCircularProgressIndicator(
-            modifier = Modifier
-                .padding(16.dp)
-                .size(100.dp),
-            initialValue = addictionDate,
-            primaryColor = Color.Green,
-            secondaryColor = Color.LightGray,
-            circleRadius = 100f,
-            onPositionChange = {}
-        )
     }
+
+
 }
 
 
@@ -222,11 +238,14 @@ internal fun Addiction(
 fun Example(navigateTo: (String) -> Unit) {
     FloatingActionButton(
         onClick = {
-
             navigateTo("Add")
         }
     ) {
-        Icon(Icons.Filled.Add, "Floating action button.")
+        Icon(
+            imageVector = Icons.Outlined.Add,
+            contentDescription = "Floating action button",
+            tint = AddictionTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 
