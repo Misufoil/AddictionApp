@@ -7,11 +7,11 @@ import dev.misufoil.addictions_data.map
 import dev.misufoil.addictions_data.model.Addiction
 import javax.inject.Inject
 
-internal class GetAddictionByTypeUseCase @Inject constructor(
+internal class GetAddictionByIdUseCase @Inject constructor(
     private val repository: AddictionsRepository
 ) {
-    suspend operator fun invoke(type: String): RequestResult<AddictionUI> {
-        val x = repository.getAddictionByType(type)
+    suspend operator fun invoke(id: Int): RequestResult<AddictionUI> {
+        val x = repository.getAddictionById(id)
             .map { addictions ->
                 addictions.toUIAddiction()
             }

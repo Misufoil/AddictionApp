@@ -1,4 +1,4 @@
-package dev.misufoil.addictions_home.presentation
+package dev.misufoil.addictions_home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

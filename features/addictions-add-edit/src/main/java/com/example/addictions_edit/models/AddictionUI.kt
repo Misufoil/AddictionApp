@@ -1,9 +1,8 @@
 package com.example.addictions_edit.models
 
-import dev.misufoil.core_utils.models.AddictionTypes
-
-internal data class AddictionUI (
-    var type: AddictionTypes,
+internal data class AddictionUI(
+    val id: Int?,
+    var type: String,
     var date: String,
     val time: String,
     val daysPerWeek: Int,

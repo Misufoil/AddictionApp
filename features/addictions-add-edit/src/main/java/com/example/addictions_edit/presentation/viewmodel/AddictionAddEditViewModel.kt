@@ -1,6 +1,7 @@
 package com.example.addictions_edit.presentation.viewmodel
 
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,15 +9,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.addictions_edit.models.AddictionUI
+import com.example.addictions_edit.usecase.GetAddictionByIdUseCase
 import com.example.addictions_edit.usecase.GetAddictionByTypeUseCase
 import com.example.addictions_edit.usecase.SavaAddictionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.misufoil.addictions_data.RequestResult
 import dev.misufoil.core_utils.date_time_utils.convertDateToString
 import dev.misufoil.core_utils.date_time_utils.convertLongToStringDate
 import dev.misufoil.core_utils.date_time_utils.formatTime
 import dev.misufoil.core_utils.date_time_utils.getCurrentTimeString
-import dev.misufoil.core_utils.models.AddictionTypes
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -25,18 +27,21 @@ import javax.inject.Provider
 // если будет ошибка убрать internal
 @HiltViewModel
 internal class AddictionAddEditViewModel @Inject constructor(
+    val getAddictionByIdUseCase: Provider<GetAddictionByIdUseCase>,
     val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
     val savaAddictionUseCase: Provider<SavaAddictionUseCase>,
+    @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var state: State = State.Loading()
         private set
 
-//    var addiction by mutableStateOf<AddictionUI?>(null)
+    //    var addiction by mutableStateOf<AddictionUI?>(null)
 //        private set
+    private var id: Int by mutableStateOf(-1)
 
-    var type by mutableStateOf(AddictionTypes.ALCOHOL)
+    var type: String by mutableStateOf(context.getString(dev.misufoil.addictions.uikit.R.string.alcohol))
         private set
 
     var date by mutableStateOf(convertDateToString(LocalDate.now()))
@@ -91,18 +96,18 @@ internal class AddictionAddEditViewModel @Inject constructor(
         update(it)
     }
 
-    val onTypeChange = updateState<AddictionTypes> { this.type = it }
+    val onTypeChange = updateState<String> { this.type = it }
     val onDateChange = updateState<Long> { this.date = convertLongToStringDate(it) }
     val onTimeChange = updateState<Pair<Int, Int>> { this.time = formatTime(it.first, it.second) }
     val onDaysPerWeekChange = updateState<Int> { this.daysPerWeek = it }
     val onTimesInDayChange = updateState<Int> { this.timesInDay = it }
 
     init {
-        val savedType = savedStateHandle.get<String>("type")!!
-
-        if (savedType == "Add") {
+        val savedParam = savedStateHandle.get<String>("addictionId")?.toInt()
+        if (savedParam == -1) {
             state = State.Success(
                 AddictionUI(
+                    id,
                     type,
                     date,
                     time,
@@ -111,7 +116,7 @@ internal class AddictionAddEditViewModel @Inject constructor(
                 )
             )
             //initUi()
-        } else if (savedType.isNotEmpty()) {
+        } else if (savedParam != null) {
 //            viewModelScope.launch {
 //                val addictionTypes = AddictionTypes.fromDescription(savedType)!!
 //                //addiction = getAddictionByTypeUseCase.get().invoke(addictionTypes).toState()
@@ -120,20 +125,20 @@ internal class AddictionAddEditViewModel @Inject constructor(
 //            initUi()
             viewModelScope.launch {
                 state = State.Loading()
-                val addictionTypes = AddictionTypes.fromDescription(savedType)
-                if (addictionTypes != null) {
-                    val result = getAddictionByTypeUseCase.get().invoke(addictionTypes)
-                    state = result.toState()
-                    if (result is RequestResult.Success) {
-                        //addiction = result.data
-                        initUi(result.data)
-                    } else {
-                        // Logging for debugging
-                        println("Error fetching data: $result")
-                    }
+                //val addictionTypes = AddictionTypes.fromDescription(savedType)
+                //if (addictionTypes != null) {
+                val result = getAddictionByIdUseCase.get().invoke(savedParam)
+                state = result.toState()
+                if (result is RequestResult.Success) {
+                    //addiction = result.data
+                    initUi(result.data)
                 } else {
-                    state = State.Error() // Handle the error if the type is not found
+                    // Logging for debugging
+                    println("Error fetching data: $result")
                 }
+//                } else {
+//                    state = State.Error() // Handle the error if the type is not found
+//                }
             }
         } else {
             state = State.Error()
@@ -141,6 +146,7 @@ internal class AddictionAddEditViewModel @Inject constructor(
     }
 
     private fun initUi(addiction: AddictionUI) {
+        id = addiction.id!!
         type = addiction.type
         date = addiction.date
         time = addiction.time
@@ -164,14 +170,26 @@ internal class AddictionAddEditViewModel @Inject constructor(
     }
 
     suspend fun saveAddiction() {
+        val existingAddiction = getAddictionByTypeUseCase.get().invoke(type)
+        if (existingAddiction is RequestResult.Success && existingAddiction.data.id != id) {
+            toastMessage = context.getString(dev.misufoil.addictions.uikit.R.string.addiction_exists_error)
+            return
+        }
+
         val saveAddiction = AddictionUI(
+            id = if (id == -1) null else id,
             type = type,
             date = date,
             time = time,
             daysPerWeek = daysPerWeek,
             timesInDay = timesInDay
         )
+
         savaAddictionUseCase.get().invoke(saveAddiction)
+    }
+
+    fun clearToastMessage() {
+        toastMessage = null
     }
 
 
@@ -230,7 +248,5 @@ internal class AddictionAddEditViewModel @Inject constructor(
 //        onSuccess()
 //    }
 //
-//    fun clearToastMessage() {
-//        toastMessage = null
-//    }
+
 }

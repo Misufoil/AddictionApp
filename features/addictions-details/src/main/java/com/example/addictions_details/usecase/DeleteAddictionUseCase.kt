@@ -14,6 +14,17 @@ internal class DeleteAddictionUseCase @Inject constructor(
     }
 }
 
+internal fun AddictionUI.toAddiction(): Addiction {
+    return Addiction(
+        id = id,
+        type = type,
+        date = date,
+        time = time,
+        daysPerWeek = daysPerWeek,
+        timesInDay = timesInDay
+    )
+}
+
 //internal class SavaAddictionUseCase @Inject constructor(
 //    private val repository: AddictionsRepository
 //) {
@@ -23,12 +34,3 @@ internal class DeleteAddictionUseCase @Inject constructor(
 //    }
 //}
 
-internal fun AddictionUI.toAddiction(): Addiction {
-    return Addiction(
-        type = type,
-        date = date,
-        time = time,
-        daysPerWeek = daysPerWeek,
-        timesInDay = timesInDay
-    )
-}

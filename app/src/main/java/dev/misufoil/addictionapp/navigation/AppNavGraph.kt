@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.addictions_details.presentation.view.AddictionDetailsScreen
 import com.example.addictions_edit.presentation.view.AddictionAddEditScreen
-import dev.misufoil.addictions_home.presentation.AddictionsHomeScreen
+import dev.misufoil.addictions_home.presentation.view.AddictionsHomeScreen
 import dev.misufoil.core_utils.Routes.ADD_EDIT_SCREEN
 import dev.misufoil.core_utils.Routes.DETAIL_SCREEN
 import dev.misufoil.core_utils.Routes.HOME_SCREEN
@@ -39,18 +39,18 @@ fun AppNavGraph(
     ) {
         composable(route = HOME_SCREEN) {
             AddictionsHomeScreen(
-                navigateToAddEdit = { type ->
-                    navController.navigate("$ADD_EDIT_SCREEN?type=$type")
+                navigateToAddEdit = { addictionId ->
+                    navController.navigate("$ADD_EDIT_SCREEN?addictionId=$addictionId")
                 },
-                navigateToDetails = { type ->
-                    navController.navigate("$DETAIL_SCREEN?type=$type")
+                navigateToDetails = { addictionId ->
+                    navController.navigate("$DETAIL_SCREEN?addictionId=$addictionId")
                 }
             )
         }
         composable(
-            route = "$DETAIL_SCREEN?type={type}",
+            route = "$DETAIL_SCREEN?addictionId={addictionId}",
             arguments = listOf(
-                navArgument(name = "type") {
+                navArgument(name = "addictionId") {
                     type = NavType.StringType
                     ////Tut
                     defaultValue = ""
@@ -59,8 +59,8 @@ fun AppNavGraph(
             )
         ) {
             AddictionDetailsScreen(
-                navigateToAddEdit = { type ->
-                    navController.navigate("$ADD_EDIT_SCREEN?type=$type")
+                navigateToAddEdit = { addictionId ->
+                    navController.navigate("$ADD_EDIT_SCREEN?addictionId=$addictionId")
                 },
                 onPopBackStack = {
                     navController.popBackStack(HOME_SCREEN, false)
@@ -69,9 +69,9 @@ fun AppNavGraph(
 
         }
         composable(
-            route = "$ADD_EDIT_SCREEN?type={type}",
+            route = "$ADD_EDIT_SCREEN?addictionId={addictionId}",
             arguments = listOf(
-                navArgument(name = "type") {
+                navArgument(name = "addictionId") {
                     type = NavType.StringType
                     ////Tut
                     defaultValue = ""

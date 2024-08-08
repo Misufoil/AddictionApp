@@ -2,14 +2,11 @@ package dev.misufoil.addictions_data
 
 import dev.misufoil.addictions_data.model.Addiction
 import dev.misufoil.core_utils.Logger
-import dev.misufoil.core_utils.models.AddictionTypes
 import dev.misufoil.database.AddictionDatabase
 import dev.misufoil.database.models.AddictionDBO
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -44,7 +41,20 @@ class AddictionsRepository @Inject constructor(
             }
     }
 
-    suspend fun getAddictionByType(type: AddictionTypes): RequestResult<Addiction> {
+    suspend fun getAddictionById(id: Int): RequestResult<Addiction> {
+        return try {
+            val dbRequest = database.addictionDao.getById(id)
+            if (dbRequest != null) {
+                RequestResult.Success(dbRequest.toAddiction())
+            } else {
+                RequestResult.Error(null, NoSuchElementException("Addiction not found"))
+            }
+        } catch (e: Exception) {
+            RequestResult.Error(null, e)
+        }
+    }
+
+    suspend fun getAddictionByType(type: String): RequestResult<Addiction> {
         return try {
             val dbRequest = database.addictionDao.getByType(type)
             if (dbRequest != null) {
@@ -70,7 +80,6 @@ class AddictionsRepository @Inject constructor(
     }
 
 }
-
 
 
 //3

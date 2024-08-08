@@ -1,5 +1,6 @@
-package dev.misufoil.addictions_home.presentation
+package dev.misufoil.addictions_home.presentation.view
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,7 +29,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -37,7 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dev.misufoil.addictions.CustomCircularProgressIndicator
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.addictions_home.models.AddictionUI
-import dev.misufoil.core_utils.models.AddictionTypes
+import dev.misufoil.addictions_home.presentation.viewmodel.AddictionsMainViewModel
+import dev.misufoil.addictions_home.presentation.viewmodel.State
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -50,8 +50,8 @@ import java.time.format.FormatStyle
 @Composable
 fun AddictionsHomeScreen(
     modifier: Modifier = Modifier,
-    navigateToAddEdit: (String) -> Unit,
-    navigateToDetails: (String) -> Unit
+    navigateToAddEdit: (Int) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     AddictionsHomeScreen(
         viewModel = hiltViewModel(),
@@ -65,20 +65,21 @@ fun AddictionsHomeScreen(
 internal fun AddictionsHomeScreen(
     viewModel: AddictionsMainViewModel,
     modifier: Modifier = Modifier,
-    navigateToAddEdit: (String) -> Unit,
-    navigateToDetails: (String) -> Unit
+    navigateToAddEdit: (Int) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val currentState = state
     AddictionsHomeContent(currentState, modifier, navigateToAddEdit, navigateToDetails)
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AddictionsHomeContent(
     currentState: State,
     modifier: Modifier = Modifier,
-    navigateToAddEdit: (String) -> Unit,
-    navigateToDetails: (String) -> Unit
+    navigateToAddEdit: (Int) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     Scaffold(
         floatingActionButton = { Example(navigateToAddEdit) }
@@ -125,13 +126,14 @@ private fun ProgressIndicator(state: State.Loading, modifier: Modifier) {
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 private fun Addictions(
     @PreviewParameter(
         AddictionsPreviewProvider::class,
         limit = 1
     ) addictions: List<AddictionUI>,
-    navigateToDetails: (String) -> Unit,
+    navigateToDetails: (Int) -> Unit,
     modifier: Modifier
 ) {
     LazyColumn {
@@ -149,7 +151,7 @@ internal fun Addiction(
         AddictionPreviewProvider::class,
         limit = 1
     ) addiction: AddictionUI,
-    navigateToDetails: (String) -> Unit,
+    navigateToDetails: (Int) -> Unit,
     modifier: Modifier
 ) {
     // Измените форматтер, чтобы он соответствовал формату addiction.date
@@ -173,7 +175,7 @@ internal fun Addiction(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navigateToDetails(addiction.type.description)
+                addiction.id?.let { navigateToDetails(it) }
             }
             .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.large),
         colors = CardDefaults.cardColors(
@@ -196,49 +198,146 @@ internal fun Addiction(
             ) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = addiction.type.toString(),
+                    text = addiction.type,
                     style = MaterialTheme.typography.headlineLarge,
-                    maxLines = 1
+                    maxLines = 3
                 )
                 Spacer(modifier = Modifier.size(4.dp))
 
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                     text = addiction.date,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1
+                    style = MaterialTheme.typography.headlineSmall,
+                    maxLines = 2
                 )
             }
 
             CustomCircularProgressIndicator(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .size(100.dp),
+                    .padding(4.dp)
+                    .size(150.dp),
                 initialValue = addictionDate,
-                primaryColor = Color.Green,
-                secondaryColor = Color.LightGray,
-                circleRadius = 100f,
-                textStyleInCircle = MaterialTheme.typography.bodySmall,
+                circleColor = AddictionTheme.colorScheme.primary,
+                secondaryCircleColor = MaterialTheme.colorScheme.secondary,
+                circleRadius = 150f,
+                textStyleInCircle = MaterialTheme.typography.bodyLarge,
                 textStyleUnderCircle = MaterialTheme.typography.bodyLarge,
+                smallCircle = true,
                 onPositionChange = {}
             )
         }
     }
-
-
 }
 
+private enum class HorizontalDragValue { Settled, StartToEnd, EndToStart }
 
-//        CustomCircularProgressIndicator(
-//
-//        )
+//@Composable
+//private fun Addictions(
+//    @PreviewParameter(
+//        AddictionsPreviewProvider::class,
+//        limit = 1
+//    ) addictions: List<AddictionUI>,
+//    navigateToDetails: (Int) -> Unit,
+//    modifier: Modifier
+//) {
+//    LazyColumn {
+//        items(addictions) { addiction ->
+//            key(addiction.type) {
+//                Addiction(addiction, navigateToDetails, modifier)
+//            }
+//        }
 //    }
+//}
+//
+//@Composable
+//internal fun Addiction(
+//    @PreviewParameter(
+//        AddictionPreviewProvider::class,
+//        limit = 1
+//    ) addiction: AddictionUI,
+//    navigateToDetails: (Int) -> Unit,
+//    modifier: Modifier
+//) {
+//    // Измените форматтер, чтобы он соответствовал формату addiction.date
+//    // val addictionDate = LocalDateTime.parse("${addiction.date}T00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+////    val date = addiction.date
+////    val time = addiction.time
+////    /val dateTimeString = "${addiction.date} ${addiction.time}"
+//
+//    val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+//    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+//    //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy HH:mm", Locale.getDefault())
+//    //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm", Locale.getDefault())
+//    val date = LocalDate.parse(addiction.date, dateFormatter)
+//    val time = LocalTime.parse(addiction.time, timeFormatter)
+//
+//
+//    val addictionDate = LocalDateTime.of(date, time)
+////    val addictionDate = LocalDateTime.parse(dateTimeString, dateTimeFormatter)
+//    Card(
+//        modifier = modifier
+//            .padding(8.dp)
+//            .fillMaxWidth()
+//            .clickable {
+//                addiction.id?.let { navigateToDetails(it) }
+//            }
+//            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.large),
+//        colors = CardDefaults.cardColors(
+//            containerColor = AddictionTheme.colorScheme.surfaceVariant,
+//        ),
+//    ) {
+//        Row(
+//            modifier = modifier,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .padding(8.dp)
+//                    .weight(1f)
+//                    .fillMaxWidth()
+////                    .background(color = Color.Gray, shape = RoundedCornerShape(8.dp))
+////                    .clickable {
+////                        navigateToDetails(addiction.type.description)
+////                    }
+//            ) {
+//                Text(
+//                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+//                    text = addiction.type,
+//                    style = MaterialTheme.typography.headlineLarge,
+//                    maxLines = 3
+//                )
+//                Spacer(modifier = Modifier.size(4.dp))
+//
+//                Text(
+//                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+//                    text = addiction.date,
+//                    style = MaterialTheme.typography.headlineSmall,
+//                    maxLines = 2
+//                )
+//            }
+//
+//            CustomCircularProgressIndicator(
+//                modifier = Modifier
+//                    .padding(4.dp)
+//                    .size(150.dp),
+//                initialValue = addictionDate,
+//                circleColor = AddictionTheme.colorScheme.primary,
+//                secondaryСircleColor = MaterialTheme.colorScheme.secondary,
+//                circleRadius = 150f,
+//                textStyleInCircle = MaterialTheme.typography.bodyLarge,
+//                textStyleUnderCircle = MaterialTheme.typography.bodyLarge,
+//                smallCircle = true,
+//                onPositionChange = {}
+//            )
+//        }
+//    }
+//}
 
 @Composable
-fun Example(navigateTo: (String) -> Unit) {
+fun Example(navigateTo: (Int) -> Unit) {
     FloatingActionButton(
         onClick = {
-            navigateTo("Add")
+            navigateTo(-1)
         }
     ) {
         Icon(
@@ -252,21 +351,24 @@ fun Example(navigateTo: (String) -> Unit) {
 private class AddictionPreviewProvider : PreviewParameterProvider<AddictionUI> {
     override val values = sequenceOf(
         AddictionUI(
-            AddictionTypes.SMOKING,
+            id = 1,
+            "stringResource(id = s)",
             "LocalDate.now()",
             "LocalTime.now()",
             3,
             20
         ),
         AddictionUI(
-            AddictionTypes.ALCOHOL,
+            id = 2,
+            "AddictionTypes.ALCOHOL",
             "LocalDate.now()",
             "LocalTime.now()",
             2,
             1
         ),
         AddictionUI(
-            AddictionTypes.DRUGS,
+            id = 3,
+            "AddictionTypes.DRUGS",
             "LocalDate.now()",
             "LocalTime.now()",
             1,

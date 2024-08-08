@@ -16,6 +16,7 @@ internal class SavaAddictionUseCase @Inject constructor(
 
 private fun AddictionUI.toAddiction(): Addiction {
     return Addiction(
+        id = id,
         type = type,
         date = date,
         time = time,

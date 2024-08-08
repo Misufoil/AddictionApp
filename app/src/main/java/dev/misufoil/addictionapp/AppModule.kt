@@ -29,4 +29,10 @@ object AppModule {
 
     @Provides
     fun provideLogger(): Logger = AndroidLogcatLogger()
+
+    @Provides
+    @Singleton
+    fun provideContext(@ApplicationContext context: Context): Context {
+        return context
+    }
 }

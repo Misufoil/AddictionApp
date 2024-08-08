@@ -6,8 +6,9 @@
     <string name="save_button">Save</string>
     <string name="edit_button">Edit</string>
     <string name="delete_button">Delete</string>
+    <string name="delete_quation">Delete the addiction?</string>
 
-    <string name="select_addiction">Select addiction</string>
+    <string name="select_addiction">What addiction are you getting rid of?</string>
     <string name="date_and_time">Date and time of quitting</string>
     <string name="frequency_of_use">Frequency of use</string>
 
@@ -25,9 +26,9 @@
     <string name="input_mode">Switch to input mode</string>
     <string name="selection_mode">Switch to selection mode</string>
 
-    <string name="save_habit">Save habit</string>
-    <string name="edit_habit">Edit habit</string>
-    <string name="delete_habit">Delete habit</string>
+    <string name="save_addiction">Save addiction</string>
+    <string name="edit_addiction">Edit addiction</string>
+    <string name="delete_addiction">Delete addiction</string>
 
     //date and time picker
     <string name="select_date">Select date</string>
@@ -35,20 +36,19 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
-
     <string name="alcohol">Alcohol</string>
     <string name="vaping">Vaping</string>
     <string name="junk_food">Junk food</string>
     <string name="caffeine">Caffeine</string>
     <string name="masturbation">Masturbation</string>
-    <string name="drug">Drug</string>
+    <string name="drugs">Drugs</string>
     <string name="nicotine">Nicotine</string>
     <string name="gambling">Gambling</string>
     <string name="internet">Internet</string>
     <string name="pornography">Pornography</string>
     <string name="sex">Sex</string>
-    <string name="cigarettes">cigarettes</string>
-    <string name="sugar">sugar</string>
+    <string name="cigarettes">Cigarettes</string>
+    <string name="sugar">Sugar</string>
     <string name="tobacco">Tobacco</string>
     <string name="food">Food</string>
     <string name="shopping">Shopping</string>
@@ -56,4 +56,15 @@
     <string name="video_games">Video games</string>
     <string name="energy_drinks">Energy drinks</string>
 
+    <string name="addiction_exists_error">A dependency with that name already exists.</string>
+
+    <string name="predefined_list">List</string>
+    <string name="custom_input">Input</string>
+    <string name="your_addiction">Your addiction</string>
+    <string name="enter_custom_addiction">Please enter a addiction</string>
+
+    <string name="D">D</string>
+    <string name="H">H</string>
+    <string name="M">M</string>
+    <string name="S">S</string>
 </resources>

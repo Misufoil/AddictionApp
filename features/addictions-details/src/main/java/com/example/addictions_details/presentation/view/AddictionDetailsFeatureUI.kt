@@ -17,6 +17,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
@@ -29,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -71,6 +71,7 @@ private fun AddictionAddEditScreen(
     modifier: Modifier
 ) {
     val currentState = viewModel.state
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.background(AddictionTheme.colorScheme.surfaceVariant)
@@ -85,6 +86,20 @@ private fun AddictionAddEditScreen(
                 navigateToAddEdit,
                 onPopBackStack,
                 padding
+            )
+        }
+
+        if (viewModel.showDeleteDialog) {
+            DeleteConfirmationDialog(
+                onConfirm = {
+                    coroutineScope.launch {
+                        viewModel.deleteAddiction()
+                        onPopBackStack()
+                    }
+                },
+                onDismiss = {
+                    viewModel.hideDeleteDialog()
+                }
             )
         }
     }
@@ -107,77 +122,45 @@ private fun AddictionScreen(
 
         InfoSlider(addiction)
 
-//        ElevatedButton(
-//            modifier = Modifier.fillMaxWidth().padding(8.dp),
-//            onClick = {
-//                navigateToAddEdit(viewModel.state.addiction?.type.toString())
-//            },
-//            ) {
-//            Icon(
-//                imageVector = ImageVector.vectorResource(R.drawable.baseline_edit_square_24),
-//                contentDescription = stringResource(id = R.string.edit_habit)
-//            )
-//            Spacer(modifier = Modifier.size(4.dp))
-//            Text(text = stringResource(id = R.string.edit_button))
-//        }
-//
-//        ElevatedButton(
-//            modifier = Modifier.fillMaxWidth().padding(8.dp),
-//            onClick = {
-//
-//            },
-//            colors = ButtonDefaults.elevatedButtonColors(
-//                containerColor = MaterialTheme.colorScheme.error,
-//                contentColor = MaterialTheme.colorScheme.onError,
-//            )
-//        ) {
-//            Icon(
-//                imageVector = ImageVector.vectorResource(R.drawable.baseline_delete_outline_24),
-//                contentDescription = stringResource(id = R.string.delete_habit)
-//            )
-//            Spacer(modifier = Modifier.size(4.dp))
-//            Text(text = stringResource(id = R.string.delete_button))
-//        }
-
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-                    ElevatedButton(
-            modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
-            onClick = {
-                navigateToAddEdit(viewModel.state.addiction?.type.toString())
-            },
+            ElevatedButton(
+                modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
+                onClick = {
+                    navigateToAddEdit(viewModel.state.addiction?.id.toString())
+                },
             ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.baseline_edit_square_24),
-                contentDescription = stringResource(id = R.string.edit_habit)
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(text = stringResource(id = R.string.edit_button))
-        }
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.baseline_edit_square_24),
+                    contentDescription = stringResource(id = R.string.edit_addiction)
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(text = stringResource(id = R.string.edit_button))
+            }
 
-        ElevatedButton(
-            modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
-            onClick = {
-                coroutineScope.launch {
-                    viewModel.deleteAddiction()
-                    onPopBackStack()
-                }
-            },
-            colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError,
-            )
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.baseline_delete_outline_24),
-                contentDescription = stringResource(id = R.string.delete_habit)
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(text = stringResource(id = R.string.delete_button))
-        }
+            ElevatedButton(
+                modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
+                onClick = {
+                    coroutineScope.launch {
+                        viewModel.showDeleteDialog()
+                        //viewModel.deleteAddiction()
+                        //onPopBackStack()
+                    }
+                },
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                )
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.baseline_delete_outline_24),
+                    contentDescription = stringResource(id = R.string.delete_addiction)
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(text = stringResource(id = R.string.delete_button))
+            }
 
 //            AssistChip(
 //                onClick = {
@@ -271,11 +254,12 @@ internal fun InfoSlider(addiction: AddictionUI) {
                                 .padding(16.dp)
                                 .size(300.dp),
                             initialValue = addictionDate,
-                            primaryColor = Color.Green,
-                            secondaryColor = Color.LightGray,
+                            circleColor = AddictionTheme.colorScheme.primary,
+                            secondaryCircleColor = MaterialTheme.colorScheme.secondary,
                             circleRadius = 300f,
-                            textStyleInCircle = MaterialTheme.typography.bodyLarge,
-                            textStyleUnderCircle = MaterialTheme.typography.bodyLarge,
+                            textStyleInCircle = MaterialTheme.typography.headlineMedium,
+                            textStyleUnderCircle = MaterialTheme.typography.headlineMedium,
+                            smallCircle = false,
                             onPositionChange = {}
                         )
                     }
@@ -297,11 +281,12 @@ internal fun InfoSlider(addiction: AddictionUI) {
                                 .padding(16.dp)
                                 .size(300.dp),
                             initialValue = addictionDate,
-                            primaryColor = Color.Red,
-                            secondaryColor = Color.LightGray,
+                            circleColor = AddictionTheme.colorScheme.primary,
+                            secondaryCircleColor = MaterialTheme.colorScheme.secondary,
                             circleRadius = 300f,
-                            textStyleInCircle = MaterialTheme.typography.bodyLarge,
-                            textStyleUnderCircle = MaterialTheme.typography.bodyLarge,
+                            textStyleInCircle = MaterialTheme.typography.headlineMedium,
+                            textStyleUnderCircle = MaterialTheme.typography.headlineMedium,
+                            smallCircle = false,
                             onPositionChange = {}
                         )
                     }
@@ -318,7 +303,7 @@ internal fun InfoSlider(addiction: AddictionUI) {
         ) {
             repeat(state.pageCount) { iteration ->
                 val color =
-                    if (state.currentPage == iteration) Color.DarkGray else Color.LightGray
+                    if (state.currentPage == iteration) AddictionTheme.colorScheme.primary else AddictionTheme.colorScheme.secondary
                 Box(
                     modifier = Modifier
                         .padding(2.dp)
@@ -362,3 +347,50 @@ private fun ProgressIndicator(
 }
 
 
+@Composable
+fun DeleteConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = stringResource(id = R.string.delete_quation)) },
+        confirmButton = {
+            ElevatedButton(
+                onClick = { onConfirm() },
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                )
+            ) {
+                Text(text = stringResource(id = R.string.delete_button))
+            }
+        },
+        dismissButton = {
+            ElevatedButton(
+                onClick = { onDismiss() }
+            ) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        }
+    )
+}
+
+//ElevatedButton(
+//            modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
+//            onClick = {
+//                coroutineScope.launch {
+//                    viewModel.showDeleteDialog()
+//                    //viewModel.deleteAddiction()
+//                    //onPopBackStack()
+//                }
+//            },
+//            colors = ButtonDefaults.elevatedButtonColors(
+//                containerColor = MaterialTheme.colorScheme.error,
+//                contentColor = MaterialTheme.colorScheme.onError,
+//            )
+//        ) {
+//            Icon(
+//                imageVector = ImageVector.vectorResource(R.drawable.baseline_delete_outline_24),
+//                contentDescription = stringResource(id = R.string.delete_habit)
+//            )
+//            Spacer(modifier = Modifier.size(4.dp))
+//            Text(text = stringResource(id = R.string.delete_button))
+//        }

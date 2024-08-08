@@ -43,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.addictions_edit.R
 import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.core_utils.date_time_utils.convertStringDateToLong
@@ -99,7 +98,7 @@ internal fun DatePickerDialog(viewModel: AddictionAddEditViewModel) {
 fun TimePickerDialog(
     time: String,
     onCancel: () -> Unit,
-    onConfirm:  (TimePickerState) -> Unit,
+    onConfirm: (TimePickerState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var mode: DisplayMode by remember { mutableStateOf(DisplayMode.Picker) }
@@ -125,7 +124,7 @@ fun TimePickerDialog(
                 Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.cancel))
             }
             TextButton(onClick = { onConfirm(timeState) }) {
-                Text( stringResource(id = dev.misufoil.addictions.uikit.R.string.ok))
+                Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.ok))
             }
         },
     ) {

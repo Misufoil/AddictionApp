@@ -1,6 +1,7 @@
 package com.example.addictions_edit.presentation.view
 
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -75,13 +76,14 @@ private fun AddictionScreen(
     padding: PaddingValues
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize().padding(padding),
         horizontalAlignment = Alignment.Start,
     ) {
         TypeComponent(
-            viewModel.type.description,
+            viewModel.type,
             onClick = { viewModel.onBottomSheetShow() }
         )
         DateAndTimeComponent(viewModel)
@@ -98,7 +100,7 @@ private fun AddictionScreen(
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(dev.misufoil.addictions.uikit.R.drawable.baseline_save_24),
-                contentDescription = stringResource(id = dev.misufoil.addictions.uikit.R.string.save_habit)
+                contentDescription = stringResource(id = dev.misufoil.addictions.uikit.R.string.save_addiction)
             )
             Spacer(modifier = Modifier.size(4.dp))
             Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.save_button))
@@ -108,9 +110,9 @@ private fun AddictionScreen(
     if (viewModel.showBottomSheet) {
         ModalBottomSheetComponent(viewModel, padding)
     }
-//    viewModel.toastMessage?.let { message ->
-//        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//        viewModel.clearToastMessage()
-//    }
+    viewModel.toastMessage?.let { message ->
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.clearToastMessage()
+    }
 }
 

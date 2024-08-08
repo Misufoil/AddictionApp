@@ -24,6 +24,7 @@ internal class GetAllAddictionsUseCase @Inject constructor(
 
 private fun Addiction.toUIAddiction(): AddictionUI {
     return AddictionUI(
+        id = id,
         type = type,
         date = date,
         time = time,

@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,14 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.misufoil.addictions.uikit.R
@@ -34,15 +35,18 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
+
 @Composable
 fun CustomCircularProgressIndicator(
     modifier: Modifier = Modifier,
     initialValue: LocalDateTime,  // Change this to LocalDateTime
-    primaryColor: Color,
-    secondaryColor: Color,
+    circleColor: Color,
+    secondaryCircleColor: Color,
     circleRadius: Float,
+
     textStyleInCircle: TextStyle,
     textStyleUnderCircle: TextStyle,
+    smallCircle: Boolean,
     onPositionChange: (LocalDateTime) -> Unit // Change this to LocalDateTime
 ) {
     val context = LocalContext.current
@@ -88,8 +92,10 @@ fun CustomCircularProgressIndicator(
         100f
     }
 
+    val sweepAngle = progress * 3.6f
+
     val milestoneText = if (nextMilestone != null) {
-         stringResource(id = R.string.goal_days, nextMilestone.toDays())
+        stringResource(id = R.string.goal_days, nextMilestone.toDays())
     } else {
         stringResource(id = R.string.goal_achieved)
     }
@@ -106,33 +112,33 @@ fun CustomCircularProgressIndicator(
             ) {
                 val width = size.width
                 val height = size.height
-                val circleThickness = width / 25f
+                val circleThickness = width / 20f
                 circleCenter = Offset(x = width / 2f, y = height / 2f)
 
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        listOf(
-                            primaryColor.copy(0.45f),
-                            secondaryColor.copy(0.15f)
-                        )
-                    ),
-                    radius = circleRadius,
-                    center = circleCenter
-                )
+//                drawCircle(
+//                    brush = Brush.radialGradient(
+//                        listOf(
+//                            circleColor.copy(0.45f),
+//                            secondaryСircleColor.copy(0.15f)
+//                        )
+//                    ),
+//                    radius = circleRadius,
+//                    center = circleCenter
+//                )
 
                 drawCircle(
                     style = Stroke(
                         width = circleThickness
                     ),
-                    color = secondaryColor,
+                    color = secondaryCircleColor,
                     radius = circleRadius,
                     center = circleCenter
                 )
 
                 drawArc(
-                    color = primaryColor,
+                    color = circleColor,
                     startAngle = 90f,
-                    sweepAngle = progress * 3.6f,
+                    sweepAngle = sweepAngle,
                     style = Stroke(
                         width = circleThickness,
                         cap = StrokeCap.Round
@@ -148,36 +154,51 @@ fun CustomCircularProgressIndicator(
                     )
                 )
 
-                val outerRadius = circleRadius + circleThickness / 2f
-                val gap = 15f
-                for (i in 0..100) {
-                    val color = if (i < progress) primaryColor else primaryColor.copy(alpha = 0.3f)
-                    val angleInDegrees = i * 3.6f
-                    val angleInRad = angleInDegrees * PI / 180f + PI / 2f
+                val x =
+                    -(circleRadius * sin(Math.toRadians(sweepAngle.toDouble()))).toFloat() + (width / 2)
+                val y =
+                    (circleRadius * cos(Math.toRadians(sweepAngle.toDouble()))).toFloat() + (height / 2)
 
-                    val yGapAdjustment = cos(angleInDegrees * PI / 180f) * gap
-                    val xGapAdjustment = -sin(angleInDegrees * PI / 180f) * gap
+                drawCircle(
+                    color = Color.White,
+                    radius = if(smallCircle) 2.dp.toPx() else 3.dp.toPx(),
+                    center = Offset(x, y)
+                )
 
-                    val start = Offset(
-                        x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-                        y = (outerRadius * sin(angleInRad) + circleCenter.y + yGapAdjustment).toFloat()
-                    )
+                if (!smallCircle) {
+                    val outerRadius = circleRadius + circleThickness / 2f
+                    val gap = 15f
+                    for (i in 0..100) {
+                        val color =
+                            if (i < progress) circleColor else circleColor.copy(alpha = 0.3f)
+                        val angleInDegrees = i * 3.6f
+                        val angleInRad = angleInDegrees * PI / 180f + PI / 2f
 
-                    val end = Offset(
-                        x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-                        y = (outerRadius * sin(angleInRad) + circleThickness + circleCenter.y + yGapAdjustment).toFloat()
-                    )
+                        val yGapAdjustment = cos(angleInDegrees * PI / 180f) * gap
+                        val xGapAdjustment = -sin(angleInDegrees * PI / 180f) * gap
 
-                    rotate(
-                        angleInDegrees,
-                        pivot = start
-                    ) {
-                        drawLine(
-                            color = color,
-                            start = start,
-                            end = end,
-                            strokeWidth = 1.dp.toPx()
+                        val start = Offset(
+                            x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
+                            y = (outerRadius * sin(angleInRad) + circleCenter.y + yGapAdjustment).toFloat()
                         )
+
+                        val end = Offset(
+                            x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
+                            y = (outerRadius * sin(angleInRad) + circleThickness + circleCenter.y + yGapAdjustment).toFloat()
+                        )
+
+                        rotate(
+                            angleInDegrees,
+                            pivot = start
+                        ) {
+                            drawLine(
+                                color = color,
+                                start = start,
+                                end = end,
+
+                                strokeWidth = 3.dp.toPx()
+                            )
+                        }
                     }
                 }
             }
@@ -186,12 +207,16 @@ fun CustomCircularProgressIndicator(
                     .align(Alignment.Center)  // Center Box inside the outer Box
             ) {
                 Text(
-                    text = formatDuration(timePassed),
+                    text = formatDurationStyled(
+                        timePassed,
+                        textStyleInCircle,
+                        smallCircle,
+                        circleColor
+                    ),
                     style = textStyleInCircle
                 )
             }
         }
-
         Text(
             text = milestoneText,
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -200,639 +225,63 @@ fun CustomCircularProgressIndicator(
     }
 }
 
-private fun formatDuration(duration: Duration): String {
+
+@Composable
+fun formatDurationStyled(
+    duration: Duration,
+    textStyleInCircle: TextStyle,
+    circleIsSmall: Boolean,
+    circleColor: Color
+): AnnotatedString {
     val days = duration.toDays()
     val hours = duration.toHours() % 24
     val minutes = duration.toMinutes() % 60
     val seconds = duration.seconds % 60
 
-    return "%02d:%02d:%02d:%02d".format(days, hours, minutes, seconds)
+    val letterFontSize =
+        (textStyleInCircle.fontSize.value / 2).sp  // Размер шрифта для букв пропорционально меньше
+
+    val letterColor = circleColor.copy(alpha = 0.7f)
+
+    return buildAnnotatedString {
+        withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
+            append("%02d".format(days))
+        }
+        withStyle(
+            style = textStyleInCircle.toSpanStyle()
+                .copy(color = letterColor, fontSize = letterFontSize)
+        ) {
+            append(stringResource(id = R.string.D))
+
+        }
+        withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
+            append("%02d".format(hours))
+        }
+        withStyle(
+            style = textStyleInCircle.toSpanStyle()
+                .copy(color = letterColor, fontSize = letterFontSize)
+        ) {
+            append(stringResource(id = R.string.H))
+        }
+        withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
+            append("%02d".format(minutes))
+        }
+        withStyle(
+            style = textStyleInCircle.toSpanStyle()
+                .copy(color = letterColor, fontSize = letterFontSize)
+        ) {
+            append(stringResource(id = R.string.M))
+        }
+        if (!circleIsSmall) {
+            withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
+                append("%02d".format(seconds))
+            }
+            withStyle(
+                style = textStyleInCircle.toSpanStyle()
+                    .copy(color = letterColor, fontSize = letterFontSize)
+            ) {
+                append(stringResource(id = R.string.S))
+            }
+        }
+    }
 }
-
-//@Composable
-//fun CustomCircularProgressIndicator(
-//    modifier: Modifier = Modifier,
-//    initialValue: LocalDateTime,
-//    primaryColor: Color,
-//    secondaryColor: Color,
-//    circleRadius: Float,
-//    onPositionChange: (LocalDateTime) -> Unit
-//) {
-//    // Define the milestones
-//    val milestones = listOf(
-//        Duration.ofDays(1),
-//        Duration.ofDays(3),
-//        Duration.ofDays(10),
-//        Duration.ofDays(30),
-//        Duration.ofDays(90),
-//        Duration.ofDays(160),
-//        Duration.ofDays(360)
-//    )
-//
-//    var circleCenter by remember {
-//        mutableStateOf(Offset.Zero)
-//    }
-//
-//    var currentTime by remember {
-//        mutableStateOf(LocalDateTime.now())
-//    }
-//
-//    // Use LaunchedEffect to update the time every second
-//    LaunchedEffect(Unit) {
-//        while (true) {
-//            currentTime = LocalDateTime.now()
-//            delay(1000L)
-//        }
-//    }
-//
-//    // Calculate time passed since initialValue
-//    val timePassed = Duration.between(initialValue, currentTime)
-//
-//    // Find the closest milestone
-//    val milestoneIndex = milestones.indexOfLast { timePassed >= it }.coerceAtLeast(0)
-//    val currentMilestone = milestones[milestoneIndex]
-//    val nextMilestone = milestones.getOrNull(milestoneIndex + 1)
-//
-//    // Calculate progress towards the next milestone
-//    val progress = if (nextMilestone != null) {
-//        val milestoneDurationMillis = nextMilestone.toMillis() - currentMilestone.toMillis()
-//        val progressDurationMillis = timePassed.toMillis() - currentMilestone.toMillis()
-//        (progressDurationMillis.toFloat() / milestoneDurationMillis.toFloat()) * 100
-//    } else {
-//        100f
-//    }
-//
-//    val milestoneText = if (nextMilestone != null) {
-//        "Цель: ${nextMilestone.toDays()} дней"
-//    } else {
-//        "Цель достигнута"
-//    }
-//
-//    Column(modifier = modifier) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        ) {
-//            Canvas(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//            ) {
-//                val width = size.width
-//                val height = size.height
-//                val circleThickness = width / 25f
-//                circleCenter = Offset(x = width / 2f, y = height / 2f)
-//
-//                drawCircle(
-//                    brush = Brush.radialGradient(
-//                        listOf(
-//                            primaryColor.copy(0.45f),
-//                            secondaryColor.copy(0.15f)
-//                        )
-//                    ),
-//                    radius = circleRadius,
-//                    center = circleCenter
-//                )
-//
-//                drawCircle(
-//                    style = Stroke(
-//                        width = circleThickness
-//                    ),
-//                    color = secondaryColor,
-//                    radius = circleRadius,
-//                    center = circleCenter
-//                )
-//
-//                drawArc(
-//                    color = primaryColor,
-//                    startAngle = 90f,
-//                    sweepAngle = progress * 3.6f,
-//                    style = Stroke(
-//                        width = circleThickness,
-//                        cap = StrokeCap.Round
-//                    ),
-//                    useCenter = false,
-//                    size = Size(
-//                        width = circleRadius * 2f,
-//                        height = circleRadius * 2f
-//                    ),
-//                    topLeft = Offset(
-//                        (width - circleRadius * 2f) / 2f,
-//                        (height - circleRadius * 2f) / 2f
-//                    )
-//                )
-//
-//                val outerRadius = circleRadius + circleThickness / 2f
-//                val gap = 15f
-//                for (i in 0..100) {
-//                    val color = if (i < progress) primaryColor else primaryColor.copy(alpha = 0.3f)
-//                    val angleInDegrees = i * 3.6f
-//                    val angleInRad = angleInDegrees * PI / 180f + PI / 2f
-//
-//                    val yGapAdjustment = cos(angleInDegrees * PI / 180f) * gap
-//                    val xGapAdjustment = -sin(angleInDegrees * PI / 180f) * gap
-//
-//                    val start = Offset(
-//                        x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                        y = (outerRadius * sin(angleInRad) + circleCenter.y + yGapAdjustment).toFloat()
-//                    )
-//
-//                    val end = Offset(
-//                        x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                        y = (outerRadius * sin(angleInRad) + circleThickness + circleCenter.y + yGapAdjustment).toFloat()
-//                    )
-//
-//                    rotate(
-//                        angleInDegrees,
-//                        pivot = start
-//                    ) {
-//                        drawLine(
-//                            color = color,
-//                            start = start,
-//                            end = end,
-//                            strokeWidth = 1.dp.toPx()
-//                        )
-//                    }
-//                }
-//            }
-//
-//            Box(
-//                modifier = Modifier
-//                    .align(Alignment.Center)  // Center Box inside the outer Box
-//            ) {
-//                Text(
-//                    text = formatDuration(timePassed),
-//                    fontSize = 12.sp,
-//                    color = Color.White
-//                )
-//            }
-//        }
-//
-//        Text(
-//            text = milestoneText,
-//            fontSize = 16.sp,
-//            color = Color.White,
-//            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp)
-//        )
-//    }
-//}
-//
-//private fun formatDuration(duration: Duration): String {
-//    val days = duration.toDays()
-//    val hours = duration.toHours() % 24
-//    val minutes = duration.toMinutes() % 60
-//    val seconds = duration.seconds % 60
-//
-//    return "%02d:%02d:%02d:%02d".format(days, hours, minutes, seconds)
-//}
-
-
-//@Composable
-//fun CustomCircularProgressIndicator(
-//    modifier: Modifier = Modifier,
-//    initialValue:Int,
-//    primaryColor: Color,
-//    secondaryColor:Color,
-//    minValue:Int = 0,
-//    maxValue:Int = 100,
-//    circleRadius:Float,
-//    onPositionChange:(Int)->Unit
-//) {
-//    var circleCenter by remember {
-//        mutableStateOf(Offset.Zero)
-//    }
-//
-//    var positionValue by remember {
-//        mutableStateOf(initialValue)
-//    }
-//
-//
-//
-//    Box(
-//        modifier = modifier
-//    ){
-//        Canvas(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        ){
-//            val width = size.width
-//            val height = size.height
-//            val circleThickness = width / 25f
-//            circleCenter = Offset(x = width/2f, y = height/2f)
-//
-//
-//            drawCircle(
-//                brush = Brush.radialGradient(
-//                    listOf(
-//                        primaryColor.copy(0.45f),
-//                        secondaryColor.copy(0.15f)
-//                    )
-//                ),
-//                radius = circleRadius,
-//                center = circleCenter
-//            )
-//
-//
-//            drawCircle(
-//                style = Stroke(
-//                    width = circleThickness
-//                ),
-//                color = secondaryColor,
-//                radius = circleRadius,
-//                center = circleCenter
-//            )
-//
-//            drawArc(
-//                color = primaryColor,
-//                startAngle = 90f,
-//                sweepAngle = (360f/maxValue) * positionValue.toFloat(),
-//                style = Stroke(
-//                    width = circleThickness,
-//                    cap = StrokeCap.Round
-//                ),
-//                useCenter = false,
-//                size = Size(
-//                    width = circleRadius * 2f,
-//                    height = circleRadius * 2f
-//                ),
-//                topLeft = Offset(
-//                    (width - circleRadius * 2f)/2f,
-//                    (height - circleRadius * 2f)/2f
-//                )
-//
-//            )
-//
-//            val outerRadius = circleRadius + circleThickness/2f
-//            val gap = 15f
-//            for (i in 0 .. (maxValue-minValue)){
-//                val color = if(i < positionValue-minValue) primaryColor else primaryColor.copy(alpha = 0.3f)
-//                val angleInDegrees = i*360f/(maxValue-minValue).toFloat()
-//                val angleInRad = angleInDegrees * PI / 180f + PI/2f
-//
-//                val yGapAdjustment = cos(angleInDegrees * PI / 180f)*gap
-//                val xGapAdjustment = -sin(angleInDegrees * PI / 180f)*gap
-//
-//                val start = Offset(
-//                    x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                    y = (outerRadius * sin(angleInRad) + circleCenter.y + yGapAdjustment).toFloat()
-//                )
-//
-//                val end = Offset(
-//                    x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                    y = (outerRadius * sin(angleInRad) + circleThickness + circleCenter.y + yGapAdjustment).toFloat()
-//                )
-//
-//                rotate(
-//                    angleInDegrees,
-//                    pivot = start
-//                ){
-//                    drawLine(
-//                        color = color,
-//                        start = start,
-//                        end = end,
-//                        strokeWidth = 1.dp.toPx()
-//                    )
-//                }
-//
-//            }
-//
-//            drawContext.canvas.nativeCanvas.apply {
-//                drawIntoCanvas {
-//                    drawText(
-//                        "$positionValue %",
-//                        circleCenter.x,
-//                        circleCenter.y + 45.dp.toPx()/3f,
-//                        Paint().apply {
-//                            textSize = 38.sp.toPx()
-//                            textAlign = Paint.Align.CENTER
-//                            color = Color.White.toArgb()
-//                            isFakeBoldText = true
-//                        }
-//                    )
-//                }
-//            }
-//
-//        }
-//    }
-//}
-
-//@Composable
-//fun CustomCircularProgressIndicator(
-//    modifier: Modifier = Modifier,
-//    initialValue: LocalDateTime,  // Change this to LocalDateTime
-//    primaryColor: Color,
-//    secondaryColor: Color,
-//    circleRadius: Float,
-//// Change this to LocalDateTime
-//) {
-//    // Define the milestones
-//    val milestones = listOf(
-//        Duration.ofDays(1),
-//        Duration.ofDays(3),
-//        Duration.ofDays(10),
-//        Duration.ofDays(30),
-//        Duration.ofDays(90),
-//        Duration.ofDays(160),
-//        Duration.ofDays(360)
-//    )
-//
-//    var circleCenter by remember {
-//        mutableStateOf(Offset.Zero)
-//    }
-//
-//    var positionValue by remember {
-//        mutableStateOf(initialValue)
-//    }
-//
-//    // Calculate time passed since initialValue
-//    val timePassed = Duration.between(initialValue, LocalDateTime.now())
-//
-//    // Find the closest milestone
-//    val milestoneIndex = milestones.indexOfLast { timePassed >= it }.coerceAtLeast(0)
-//    val nextMilestone = milestones.getOrNull(milestoneIndex + 1)
-//
-//    // Calculate progress towards the next milestone
-//    val progress = if (nextMilestone != null) {
-//        (timePassed.toMillis().toFloat() / nextMilestone.toMillis().toFloat()) * 100
-//    } else {
-//        100f
-//    }
-//
-//    Box(
-//        modifier = modifier
-//    ) {
-//        Canvas(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        ) {
-//            val width = size.width
-//            val height = size.height
-//            val circleThickness = width / 25f
-//            circleCenter = Offset(x = width / 2f, y = height / 2f)
-//
-//            drawCircle(
-//                brush = Brush.radialGradient(
-//                    listOf(
-//                        primaryColor.copy(0.45f),
-//                        secondaryColor.copy(0.15f)
-//                    )
-//                ),
-//                radius = circleRadius,
-//                center = circleCenter
-//            )
-//
-//            drawCircle(
-//                style = Stroke(
-//                    width = circleThickness
-//                ),
-//                color = secondaryColor,
-//                radius = circleRadius,
-//                center = circleCenter
-//            )
-//
-//            drawArc(
-//                color = primaryColor,
-//                startAngle = 90f,
-//                sweepAngle = progress * 3.6f,
-//                style = Stroke(
-//                    width = circleThickness,
-//                    cap = StrokeCap.Round
-//                ),
-//                useCenter = false,
-//                size = Size(
-//                    width = circleRadius * 2f,
-//                    height = circleRadius * 2f
-//                ),
-//                topLeft = Offset(
-//                    (width - circleRadius * 2f) / 2f,
-//                    (height - circleRadius * 2f) / 2f
-//                )
-//            )
-//
-//            val outerRadius = circleRadius + circleThickness / 2f
-//            val gap = 15f
-//            for (i in 0..100) {
-//                val color = if (i < progress) primaryColor else primaryColor.copy(alpha = 0.3f)
-//                val angleInDegrees = i * 3.6f
-//                val angleInRad = angleInDegrees * PI / 180f + PI / 2f
-//
-//                val yGapAdjustment = cos(angleInDegrees * PI / 180f) * gap
-//                val xGapAdjustment = -sin(angleInDegrees * PI / 180f) * gap
-//
-//                val start = Offset(
-//                    x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                    y = (outerRadius * sin(angleInRad) + circleCenter.y + yGapAdjustment).toFloat()
-//                )
-//
-//                val end = Offset(
-//                    x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                    y = (outerRadius * sin(angleInRad) + circleThickness + circleCenter.y + yGapAdjustment).toFloat()
-//                )
-//
-//                rotate(
-//                    angleInDegrees,
-//                    pivot = start
-//                ) {
-//                    drawLine(
-//                        color = color,
-//                        start = start,
-//                        end = end,
-//                        strokeWidth = 1.dp.toPx()
-//                    )
-//                }
-//
-//            }
-//
-////            drawContext.canvas.nativeCanvas.apply {
-////                drawIntoCanvas {
-////                    drawText(
-////                        formatDuration(timePassed),
-////                        circleCenter.x,
-////                        circleCenter.y + 12,
-////                        Paint().apply {
-////                            textSize = 12.sp.toPx()
-////                            textAlign = Paint.Align.CENTER
-////                            color = Color.White.toArgb()
-////                            isFakeBoldText = true
-////                        }
-////                    )
-////                }
-////            }
-//            // Text in the center of the circle
-//
-//        }
-//
-//        Box(
-//            modifier = Modifier
-//                .align(Alignment.Center)  // Center Box inside the outer Box
-//        ) {
-//            Text(
-//                text = formatDuration(timePassed),
-//                fontSize = 12.sp,
-//                color = Color.White
-//            )
-//        }
-//    }
-//}
-
-
-//@Preview
-//@Composable
-//fun Preview() {
-//    CustomCircularProgressIndicator(
-//        modifier = Modifier
-//            .size(250.dp)
-//            .background(Color.DarkGray),
-//        initialValue = 67,
-//        primaryColor = Color.Red,
-//        secondaryColor = Color.DarkGray,
-//        circleRadius = 230f,
-//    )
-//}
-
-//@Composable
-//fun CustomCircularProgressIndicator(
-//    modifier: Modifier = Modifier,
-//    initialValue:Int,
-//    primaryColor: Color,
-//    secondaryColor:Color,
-//    minValue:Int = 0,
-//    maxValue:Int = 100,
-//    circleRadius:Float,
-//    onPositionChange:(Int)->Unit
-//) {
-//    var circleCenter by remember {
-//        mutableStateOf(Offset.Zero)
-//    }
-//
-//    var positionValue by remember {
-//        mutableStateOf(initialValue)
-//    }
-//
-//
-//
-//    Box(
-//        modifier = modifier
-//    ){
-//        Canvas(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        ){
-//            val width = size.width
-//            val height = size.height
-//            val circleThickness = width / 25f
-//            circleCenter = Offset(x = width/2f, y = height/2f)
-//
-//
-//            drawCircle(
-//                brush = Brush.radialGradient(
-//                    listOf(
-//                        primaryColor.copy(0.45f),
-//                        secondaryColor.copy(0.15f)
-//                    )
-//                ),
-//                radius = circleRadius,
-//                center = circleCenter
-//            )
-//
-//
-//            drawCircle(
-//                style = Stroke(
-//                    width = circleThickness
-//                ),
-//                color = secondaryColor,
-//                radius = circleRadius,
-//                center = circleCenter
-//            )
-//
-//            drawArc(
-//                color = primaryColor,
-//                startAngle = 90f,
-//                sweepAngle = (360f/maxValue) * positionValue.toFloat(),
-//                style = Stroke(
-//                    width = circleThickness,
-//                    cap = StrokeCap.Round
-//                ),
-//                useCenter = false,
-//                size = Size(
-//                    width = circleRadius * 2f,
-//                    height = circleRadius * 2f
-//                ),
-//                topLeft = Offset(
-//                    (width - circleRadius * 2f)/2f,
-//                    (height - circleRadius * 2f)/2f
-//                )
-//
-//            )
-//
-//            val outerRadius = circleRadius + circleThickness/2f
-//            val gap = 15f
-//            for (i in 0 .. (maxValue-minValue)){
-//                val color = if(i < positionValue-minValue) primaryColor else primaryColor.copy(alpha = 0.3f)
-//                val angleInDegrees = i*360f/(maxValue-minValue).toFloat()
-//                val angleInRad = angleInDegrees * PI / 180f + PI/2f
-//
-//                val yGapAdjustment = cos(angleInDegrees * PI / 180f)*gap
-//                val xGapAdjustment = -sin(angleInDegrees * PI / 180f)*gap
-//
-//                val start = Offset(
-//                    x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                    y = (outerRadius * sin(angleInRad) + circleCenter.y + yGapAdjustment).toFloat()
-//                )
-//
-//                val end = Offset(
-//                    x = (outerRadius * cos(angleInRad) + circleCenter.x + xGapAdjustment).toFloat(),
-//                    y = (outerRadius * sin(angleInRad) + circleThickness + circleCenter.y + yGapAdjustment).toFloat()
-//                )
-//
-//                rotate(
-//                    angleInDegrees,
-//                    pivot = start
-//                ){
-//                    drawLine(
-//                        color = color,
-//                        start = start,
-//                        end = end,
-//                        strokeWidth = 1.dp.toPx()
-//                    )
-//                }
-//
-//            }
-//
-//            drawContext.canvas.nativeCanvas.apply {
-//                drawIntoCanvas {
-//                    drawText(
-//                        "$positionValue %",
-//                        circleCenter.x,
-//                        circleCenter.y + 45.dp.toPx()/3f,
-//                        Paint().apply {
-//                            textSize = 32.sp.toPx()
-//                            textAlign = Paint.Align.CENTER
-//                            color = Color.White.toArgb()
-//                            isFakeBoldText = true
-//                        }
-//                    )
-//                }
-//            }
-//
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun Preview() {
-//    CustomCircularProgressIndicator(
-//        modifier = Modifier
-//            .size(250.dp)
-//            .background(Color.DarkGray)
-//        ,
-//        initialValue = 50,
-//        primaryColor = Color.Blue,
-//        secondaryColor = Color.Gray,
-//        circleRadius = 230f,
-//        onPositionChange = {
-//
-//        }
-//    )
-//}
-

@@ -2,12 +2,18 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9a0b01a826ae40f1b5f6b89e4dad95b8",
+    "identityHash": "b82067db29a5479e0a823f955b21ff3e",
     "entities": [
       {
         "tableName": "AddictionDBO",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`type` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `daysPerWeek` INTEGER NOT NULL, `timesInDay` INTEGER NOT NULL, PRIMARY KEY(`type`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `type` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `daysPerWeek` INTEGER NOT NULL, `timesInDay` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
           {
             "fieldPath": "type",
             "columnName": "type",
@@ -42,7 +48,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "type"
+            "id"
           ]
         },
         "indices": [],
@@ -52,7 +58,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9a0b01a826ae40f1b5f6b89e4dad95b8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b82067db29a5479e0a823f955b21ff3e')"
     ]
   }
 }

@@ -1,9 +1,8 @@
 package dev.misufoil.addictions_data.model
 
-import dev.misufoil.core_utils.models.AddictionTypes
-
 data class Addiction(
-    var type: AddictionTypes,
+    val id: Int?,
+    var type: String,
     var date: String,
     val time: String,
     val daysPerWeek: Int,

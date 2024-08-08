@@ -26,4 +26,6 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.courutines.core)
+
+    implementation(project(":addictions-uikit"))
 }

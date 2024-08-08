@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "AddictionDBO")
 data class AddictionDBO(
-    @PrimaryKey @ColumnInfo("type") var type: dev.misufoil.core_utils.models.AddictionTypes,
+    @PrimaryKey val id: Int? = null,
+    @ColumnInfo("type") var type: String,
     @ColumnInfo("date") var date: String,
     @ColumnInfo("time") val time: String,
     @ColumnInfo("daysPerWeek") val daysPerWeek: Int,

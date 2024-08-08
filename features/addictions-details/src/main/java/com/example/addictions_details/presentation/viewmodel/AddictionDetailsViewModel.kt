@@ -1,5 +1,8 @@
 package com.example.addictions_details.presentation.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +11,6 @@ import com.example.addictions_details.usecase.DeleteAddictionUseCase
 import com.example.addictions_details.usecase.GetAddictionByTypeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.misufoil.addictions_data.RequestResult
-import dev.misufoil.core_utils.models.AddictionTypes
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
@@ -24,15 +26,18 @@ internal class AddictionDetailsViewModel @Inject constructor(
     var state: State = State.Loading()
         private set
 
-    init {
-        val savedType = savedStateHandle.get<String>("type")!!
+    var showDeleteDialog by mutableStateOf(false)
+        private set
 
-        if (savedType.isNotEmpty()) {
+    init {
+        val addictionId = savedStateHandle.get<String>("addictionId")?.toInt()
+
+        if (addictionId != null) {
             viewModelScope.launch {
                 state = State.Loading()
-                val addictionTypes = AddictionTypes.fromDescription(savedType)
-                if (addictionTypes != null) {
-                    val result = getAddictionByTypeUseCase.get().invoke(addictionTypes)
+                //val addictionTypes = AddictionTypes.fromDescription(savedType)
+                //if (addictionTypes != null) {
+                    val result = getAddictionByTypeUseCase.get().invoke(addictionId.toInt())
                     state = result.toState()
                     if (result is RequestResult.Success) {
                         //addiction = result.data
@@ -41,9 +46,9 @@ internal class AddictionDetailsViewModel @Inject constructor(
                         // Logging for debugging
                         println("Error fetching data: $result")
                     }
-                } else {
-                    state = State.Error() // Handle the error if the type is not found
-                }
+//                } else {
+//                    state = State.Error() // Handle the error if the type is not found
+//                }
             }
         } else {
             state = State.Error()
@@ -70,8 +75,17 @@ internal class AddictionDetailsViewModel @Inject constructor(
         class Success(override val addiction: AddictionUI) : State(addiction)
     }
 
+    fun showDeleteDialog() {
+        showDeleteDialog = true
+    }
+
+    fun hideDeleteDialog() {
+        showDeleteDialog = false
+    }
+
     suspend fun deleteAddiction() {
         state.addiction?.let { deleteAddictionUseCase.get().invoke(it) }
+        hideDeleteDialog()
     }
 
 }
