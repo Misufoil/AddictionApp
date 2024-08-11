@@ -43,13 +43,11 @@ fun CustomCircularProgressIndicator(
     circleColor: Color,
     secondaryCircleColor: Color,
     circleRadius: Float,
-
     textStyleInCircle: TextStyle,
     textStyleUnderCircle: TextStyle,
     smallCircle: Boolean,
     onPositionChange: (LocalDateTime) -> Unit // Change this to LocalDateTime
 ) {
-    val context = LocalContext.current
     // Define the milestones
     val milestones = listOf(
         Duration.ofDays(0),

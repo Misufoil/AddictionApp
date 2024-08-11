@@ -1,5 +1,6 @@
 package com.example.addictions_edit.presentation.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -95,7 +97,11 @@ internal fun TypeComponent(
 
 @ExperimentalMaterial3Api
 @Composable
-internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
+internal fun DateAndTimeComponent(
+    viewModel: AddictionAddEditViewModel,
+    date: String,
+    time: String
+) {
 
 
     Text(
@@ -122,7 +128,7 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(1f),
-                text = viewModel.date,
+                text = date,
                 //text = viewModel.date.format(DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)),
                 style = AddictionTheme.typography.bodyLarge
             )
@@ -149,7 +155,7 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
         Row {
             Text(
                 modifier = Modifier.padding(16.dp).weight(1f),
-                text = viewModel.time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                text = time.format(DateTimeFormatter.ofPattern("HH:mm")),
                 style = AddictionTheme.typography.bodyLarge
             )
             Icon(
@@ -161,7 +167,7 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
     }
 
     if (viewModel.showDateDialog) {
-        DatePickerDialog(viewModel)
+        DatePickerDialog(viewModel, date)
     }
 
     if (viewModel.showTimeDialog) {
@@ -177,7 +183,10 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
                 val currentMillis = System.currentTimeMillis()
 
                 val maxDateTimeReached =
-                    convertStringDateTimeToLong(viewModel.date, "%02d:%02d".format(hour, minute))
+                    convertStringDateTimeToLong(
+                        viewModel.uiState.value.date,
+                        "%02d:%02d".format(hour, minute)
+                    )
 
                 if (maxDateTimeReached <= currentMillis) {
                     viewModel.onTimeChange(Pair(hour, minute))
@@ -191,7 +200,7 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
                 }
                 viewModel.showTimeDialogHide()
             },
-            time = viewModel.time
+            time = viewModel.uiState.collectAsState().value.time
         )
     }
 }
@@ -199,7 +208,12 @@ internal fun DateAndTimeComponent(viewModel: AddictionAddEditViewModel) {
 
 @ExperimentalMaterial3Api
 @Composable
-internal fun FrequencyOfUseComponent(viewModel: AddictionAddEditViewModel) {
+internal fun FrequencyOfUseComponent(
+    viewModel: AddictionAddEditViewModel,
+    daysPerWeek: Int,
+    timesInDay: Int
+) {
+    Log.d("FrequencyOfUseComponent", "FrequencyOfUseComponent")
     Text(
         text = stringResource(id = R.string.frequency_of_use),
         modifier = Modifier.padding(8.dp),
@@ -225,30 +239,30 @@ internal fun FrequencyOfUseComponent(viewModel: AddictionAddEditViewModel) {
             )
 
             IconButton(
-                onClick = { if (viewModel.daysPerWeek > 1) viewModel.onDaysPerWeekChange(viewModel.daysPerWeek - 1) },
-                enabled = viewModel.daysPerWeek > 1
+                onClick = { if (daysPerWeek > 1) viewModel.onDaysPerWeekChange(daysPerWeek - 1) },
+                enabled = daysPerWeek > 1
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.baseline_remove_24),
                     contentDescription = stringResource(id = R.string.reduce_days),
-                    tint = if (viewModel.daysPerWeek > 1) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
+                    tint = if (daysPerWeek > 1) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
 
             Text(
-                text = viewModel.daysPerWeek.toString(),
+                text = daysPerWeek.toString(),
                 modifier = Modifier.padding(horizontal = 16.dp),
                 style = AddictionTheme.typography.bodyLarge
             )
 
             IconButton(
-                onClick = { if (viewModel.daysPerWeek < 7) viewModel.onDaysPerWeekChange(viewModel.daysPerWeek + 1) },
-                enabled = viewModel.daysPerWeek < 7
+                onClick = { if (daysPerWeek < 7) viewModel.onDaysPerWeekChange(daysPerWeek + 1) },
+                enabled = daysPerWeek < 7
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.baseline_add_24),
                     contentDescription = stringResource(id = R.string.increase_days),
-                    tint = if (viewModel.daysPerWeek < 7) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
+                    tint = if (daysPerWeek < 7) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
         }
@@ -263,16 +277,6 @@ internal fun FrequencyOfUseComponent(viewModel: AddictionAddEditViewModel) {
         colors = CardDefaults.cardColors(
             containerColor = AddictionTheme.colorScheme.surfaceVariant,
         ),
-        //modifier = modifier
-        //            .padding(8.dp)
-        //            .fillMaxWidth()
-        //            .clickable {
-        //                navigateToDetails(addiction.type.description)
-        //            }
-        //            .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.large),
-        //        colors = CardDefaults.cardColors(
-        //            containerColor = AddictionTheme.colorScheme.surfaceVariant,
-        //        ),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -285,30 +289,30 @@ internal fun FrequencyOfUseComponent(viewModel: AddictionAddEditViewModel) {
             )
 
             IconButton(
-                onClick = { if (viewModel.timesInDay > 1) viewModel.onTimesInDayChange(viewModel.timesInDay - 1) },
-                enabled = viewModel.timesInDay > 1
+                onClick = { if (timesInDay > 1) viewModel.onTimesInDayChange(timesInDay - 1) },
+                enabled = timesInDay > 1
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.baseline_remove_24),
                     contentDescription = stringResource(id = R.string.increase_times),
-                    tint = if (viewModel.timesInDay > 1) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
+                    tint = if (timesInDay > 1) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
 
             Text(
-                text = viewModel.timesInDay.toString(),
+                text = timesInDay.toString(),
                 modifier = Modifier.padding(horizontal = 16.dp),
                 style = AddictionTheme.typography.bodyLarge
             )
 
             IconButton(
-                onClick = { if (viewModel.timesInDay < 100) viewModel.onTimesInDayChange(viewModel.timesInDay + 1) },
-                enabled = viewModel.timesInDay < 100
+                onClick = { if (timesInDay < 100) viewModel.onTimesInDayChange(timesInDay + 1) },
+                enabled = timesInDay < 100
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.baseline_add_24),
                     contentDescription = stringResource(id = R.string.reduce_times),
-                    tint = if (viewModel.timesInDay < 100) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
+                    tint = if (timesInDay < 100) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
         }
@@ -329,7 +333,7 @@ internal fun ModalBottomSheetComponent(
     var customAddiction by remember { mutableStateOf("") }
     var selectedTabIndex by remember { mutableStateOf(0) }
     var showError by remember { mutableStateOf(false) }
-    val maxChar = 25
+    val maxChar = 15
 
     ModalBottomSheet(
         modifier = Modifier.fillMaxSize(),
@@ -471,10 +475,6 @@ internal fun ModalBottomSheetComponent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-//                                colors = ButtonDefaults.elevatedButtonColors(
-//                                    containerColor = MaterialTheme.colorScheme.primary,
-//                                    contentColor = MaterialTheme.colorScheme.onPrimary
-//                                )
                             ) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.baseline_save_24),
@@ -490,113 +490,3 @@ internal fun ModalBottomSheetComponent(
         }
     )
 }
-//TextField(
-//    value = text,
-//    onValueChange = {
-//        if (it.length <= maxChar) text = it
-//    },
-//    modifier = Modifier.fillMaxWidth(),
-//    supportingText = {
-//        Text(
-//            text = "${text.length} / $maxChar",
-//            modifier = Modifier.fillMaxWidth(),
-//            textAlign = TextAlign.End,
-//        )
-//    },
-//)
-
-//ElevatedButton(
-//            modifier = Modifier.fillMaxWidth().padding(8.dp),
-//            onClick = {
-//                coroutineScope.launch {
-//                    viewModel.saveAddiction()
-//                    onPopBackStack()
-//                }
-//            },
-//        ) {
-//                            ElevatedButton(
-//                                onClick = {
-//                                    if (customAddiction.isNotBlank()) {
-//                                        coroutineScope.launch {
-//                                            viewModel.onTypeChange(customAddiction)
-//                                            viewModel.onBottomSheetHide()
-//                                            modalBottomSheetState.hide()
-//                                        }
-//                                    } else {
-//                                        Toast.makeText(
-//                                            context,
-//                                            context.getString(R.string.enter_custom_addiction),
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
-//                                    }
-//                                },
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(8.dp)
-//                            ) {
-//                                Text(text = context.getString(R.string.use_custom_addiction))
-//                            }
-
-//@ExperimentalMaterial3Api
-//@Composable
-//internal fun ModalBottomSheetComponent(
-//    viewModel: AddictionAddEditViewModel,
-//    padding: PaddingValues
-//) {
-//    val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-//    val addictionList = AddictionTypes.entries
-//    val coroutineScope = rememberCoroutineScope()
-//    val context = LocalContext.current
-//
-//    ModalBottomSheet(
-//        modifier = Modifier.fillMaxSize(),
-//        onDismissRequest = {
-//            viewModel.onBottomSheetHide()
-//        },
-//        sheetState = modalBottomSheetState,
-//        dragHandle = { BottomSheetDefaults.DragHandle() },
-//        content = {
-//            LazyColumn(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//            ) {
-//                items(addictionList) { addiction ->
-//                    Card(
-//                        modifier = Modifier
-//                            .padding(4.dp)
-//                            .fillMaxWidth()
-//                            .shadow(elevation = 1.dp, shape = MaterialTheme.shapes.medium)
-//                            .clickable {
-//                                coroutineScope.launch {
-//                                    viewModel.onTypeChange(AddictionTypes.getDescription(context, addiction))
-//                                    viewModel.onBottomSheetHide()
-//                                    modalBottomSheetState.hide()
-//                                }
-//                            },
-//                        colors = CardDefaults.cardColors(
-//                            containerColor = AddictionTheme.colorScheme.surfaceVariant,
-//                        ),
-//                    ) {
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(8.dp),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            Text(
-//                                text = AddictionTypes.getDescription(context, addiction),
-//                                modifier = Modifier.padding(
-//                                    top = 4.dp,
-//                                    bottom = 4.dp,
-//                                    start = 10.dp,
-//                                    end = 10.dp
-//                                ),
-//                                fontSize = 24.sp
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    )
-//}

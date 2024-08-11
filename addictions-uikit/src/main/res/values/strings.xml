@@ -56,7 +56,7 @@
     <string name="video_games">Video games</string>
     <string name="energy_drinks">Energy drinks</string>
 
-    <string name="addiction_exists_error">A dependency with that name already exists.</string>
+    <string name="addiction_exists_error">A addiction with that name already exists.</string>
 
     <string name="predefined_list">List</string>
     <string name="custom_input">Input</string>
@@ -67,4 +67,6 @@
     <string name="H">H</string>
     <string name="M">M</string>
     <string name="S">S</string>
+
+    <string name="addiction_removed">Addiction removed</string>
 </resources>

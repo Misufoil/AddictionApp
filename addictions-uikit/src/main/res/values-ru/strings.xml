@@ -67,4 +67,6 @@
     <string name="H">Ч</string>
     <string name="M">М</string>
     <string name="S">С</string>
+
+    <string name="addiction_removed">Зависимость удалена</string>
 </resources>

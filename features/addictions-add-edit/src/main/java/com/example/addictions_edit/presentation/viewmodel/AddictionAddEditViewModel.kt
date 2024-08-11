@@ -19,17 +19,20 @@ import dev.misufoil.core_utils.date_time_utils.convertDateToString
 import dev.misufoil.core_utils.date_time_utils.convertLongToStringDate
 import dev.misufoil.core_utils.date_time_utils.formatTime
 import dev.misufoil.core_utils.date_time_utils.getCurrentTimeString
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Provider
 
-// если будет ошибка убрать internal
 @HiltViewModel
 internal class AddictionAddEditViewModel @Inject constructor(
-    val getAddictionByIdUseCase: Provider<GetAddictionByIdUseCase>,
-    val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
-    val savaAddictionUseCase: Provider<SavaAddictionUseCase>,
+    private val getAddictionByIdUseCase: Provider<GetAddictionByIdUseCase>,
+    private val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
+    private val savaAddictionUseCase: Provider<SavaAddictionUseCase>,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -37,24 +40,20 @@ internal class AddictionAddEditViewModel @Inject constructor(
     var state: State = State.Loading()
         private set
 
-    //    var addiction by mutableStateOf<AddictionUI?>(null)
-//        private set
-    private var id: Int by mutableStateOf(-1)
+    private val _uiState: MutableStateFlow<AddictionUI> by lazy {
+        MutableStateFlow(
+            AddictionUI(
+                id = null,
+                type = context.getString(dev.misufoil.addictions.uikit.R.string.alcohol),
+                date = convertDateToString(LocalDate.now()),
+                time = getCurrentTimeString(),
+                daysPerWeek = 1,
+                timesInDay = 1,
+            )
+        )
+    }
 
-    var type: String by mutableStateOf(context.getString(dev.misufoil.addictions.uikit.R.string.alcohol))
-        private set
-
-    var date by mutableStateOf(convertDateToString(LocalDate.now()))
-        private set
-
-    var time by mutableStateOf(getCurrentTimeString())
-        private set
-
-    var daysPerWeek by mutableStateOf(1)
-        private set
-
-    var timesInDay by mutableStateOf(1)
-        private set
+    val uiState: StateFlow<AddictionUI> = _uiState.asStateFlow()
 
     var showBottomSheet by mutableStateOf(false)
         private set
@@ -92,66 +91,60 @@ internal class AddictionAddEditViewModel @Inject constructor(
         showTimeDialog = false
     }
 
-    private fun <T> updateState(update: (T) -> Unit): (T) -> Unit = {
-        update(it)
+    fun onTypeChange(type: String) {
+        _uiState.update {
+            it.copy(type = type)
+        }
     }
 
-    val onTypeChange = updateState<String> { this.type = it }
-    val onDateChange = updateState<Long> { this.date = convertLongToStringDate(it) }
-    val onTimeChange = updateState<Pair<Int, Int>> { this.time = formatTime(it.first, it.second) }
-    val onDaysPerWeekChange = updateState<Int> { this.daysPerWeek = it }
-    val onTimesInDayChange = updateState<Int> { this.timesInDay = it }
+    fun onDateChange(date: Long) {
+        _uiState.update {
+            it.copy(date = convertLongToStringDate(date))
+        }
+    }
+
+    fun onTimeChange(time: Pair<Int, Int>) {
+        _uiState.update {
+            it.copy(time = formatTime(time.first, time.second))
+        }
+    }
+
+    fun onDaysPerWeekChange(daysPerWeek: Int) {
+        _uiState.update {
+            it.copy(daysPerWeek = daysPerWeek)
+        }
+    }
+
+    fun onTimesInDayChange(timesInDay: Int) {
+        _uiState.update {
+            it.copy(timesInDay = timesInDay)
+        }
+    }
 
     init {
         val savedParam = savedStateHandle.get<String>("addictionId")?.toInt()
         if (savedParam == -1) {
-            state = State.Success(
-                AddictionUI(
-                    id,
-                    type,
-                    date,
-                    time,
-                    daysPerWeek,
-                    timesInDay
-                )
-            )
-            //initUi()
+            state = State.Success(_uiState.value)
         } else if (savedParam != null) {
-//            viewModelScope.launch {
-//                val addictionTypes = AddictionTypes.fromDescription(savedType)!!
-//                //addiction = getAddictionByTypeUseCase.get().invoke(addictionTypes).toState()
-//                state = getAddictionByTypeUseCase.get().invoke(addictionTypes).toState()
-//            }
-//            initUi()
             viewModelScope.launch {
                 state = State.Loading()
-                //val addictionTypes = AddictionTypes.fromDescription(savedType)
-                //if (addictionTypes != null) {
                 val result = getAddictionByIdUseCase.get().invoke(savedParam)
+
                 state = result.toState()
+
                 if (result is RequestResult.Success) {
-                    //addiction = result.data
                     initUi(result.data)
                 } else {
-                    // Logging for debugging
                     println("Error fetching data: $result")
                 }
-//                } else {
-//                    state = State.Error() // Handle the error if the type is not found
-//                }
             }
         } else {
             state = State.Error()
         }
     }
 
-    private fun initUi(addiction: AddictionUI) {
-        id = addiction.id!!
-        type = addiction.type
-        date = addiction.date
-        time = addiction.time
-        daysPerWeek = addiction.daysPerWeek
-        timesInDay = addiction.timesInDay
+    private suspend fun initUi(addiction: AddictionUI) {
+        _uiState.emit(addiction)
     }
 
     private fun RequestResult<AddictionUI>.toState(): State {
@@ -170,83 +163,17 @@ internal class AddictionAddEditViewModel @Inject constructor(
     }
 
     suspend fun saveAddiction() {
-        val existingAddiction = getAddictionByTypeUseCase.get().invoke(type)
-        if (existingAddiction is RequestResult.Success && existingAddiction.data.id != id) {
-            toastMessage = context.getString(dev.misufoil.addictions.uikit.R.string.addiction_exists_error)
+        val existingAddiction = getAddictionByTypeUseCase.get().invoke(uiState.value.type)
+        if (existingAddiction is RequestResult.Success && existingAddiction.data.id != uiState.value.id) {
+            toastMessage =
+                context.getString(dev.misufoil.addictions.uikit.R.string.addiction_exists_error)
             return
         }
 
-        val saveAddiction = AddictionUI(
-            id = if (id == -1) null else id,
-            type = type,
-            date = date,
-            time = time,
-            daysPerWeek = daysPerWeek,
-            timesInDay = timesInDay
-        )
-
-        savaAddictionUseCase.get().invoke(saveAddiction)
+        savaAddictionUseCase.get().invoke(uiState.value)
     }
 
     fun clearToastMessage() {
         toastMessage = null
     }
-
-
-    //    fun initUi() {
-//        state.addiction.let {
-//            if (it != null) {
-//                type = it.type
-//                date = it.date
-//                time = it.time
-//                daysPerWeek = it.daysPerWeek
-//                timesInDay = it.timesInDay.toString()
-//            }
-//        }
-//    }
-
-//    private fun getCurrentDateToString(): String {
-//
-////        val dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
-////        return currentDate.format(dateFormatter)
-//        val currentDate = LocalDate.now()
-//        val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-//        return currentDate.format(dateFormatter)
-//
-//
-////        return SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(currentDate)
-//    }
-
-//    fun validateInput(): Boolean {
-//        return when {
-//            timesInDay.isEmpty() -> {
-//                toastMessage = "Поле 'Кол-во в день' не может быть пустым"
-//                false
-//            }
-//            !timesInDay.all { it.isDigit() } -> {
-//                toastMessage = "Поле 'Кол-во в день' должно содержать только цифры"
-//                false
-//            }
-//            else -> {
-//                toastMessage = null
-//                true
-//            }
-//        }
-//    }
-
-//    suspend fun saveAddiction(onSuccess: () -> Unit) {
-//        if (!validateInput()) return
-//
-//        val saveAddiction = AddictionUI(
-//            type = type,
-//            date = date,
-//            time = time,
-//            daysPerWeek = daysPerWeek,
-//            timesInDay = timesInDay.toInt()
-//        )
-//        savaAddictionUseCase.get().invoke(saveAddiction)
-//        onSuccess()
-//    }
-//
-
 }

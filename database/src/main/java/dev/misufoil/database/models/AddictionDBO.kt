@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "AddictionDBO")
 data class AddictionDBO(
     @PrimaryKey val id: Int? = null,
-    @ColumnInfo("type") var type: String,
-    @ColumnInfo("date") var date: String,
+    @ColumnInfo("type") val type: String,
+    @ColumnInfo("date") val date: String,
     @ColumnInfo("time") val time: String,
     @ColumnInfo("daysPerWeek") val daysPerWeek: Int,
     @ColumnInfo("timesInDay") val timesInDay: Int

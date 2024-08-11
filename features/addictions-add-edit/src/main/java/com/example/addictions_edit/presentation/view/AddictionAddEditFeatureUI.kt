@@ -16,6 +16,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,6 +78,7 @@ private fun AddictionScreen(
     onPopBackStack: () -> Boolean,
     padding: PaddingValues
 ) {
+    val addictionUiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -83,11 +87,15 @@ private fun AddictionScreen(
         horizontalAlignment = Alignment.Start,
     ) {
         TypeComponent(
-            viewModel.type,
+            addictionUiState.type,
             onClick = { viewModel.onBottomSheetShow() }
         )
-        DateAndTimeComponent(viewModel)
-        FrequencyOfUseComponent(viewModel)
+        DateAndTimeComponent(viewModel, addictionUiState.date, addictionUiState.time)
+        FrequencyOfUseComponent(
+            viewModel,
+            addictionUiState.daysPerWeek,
+            addictionUiState.timesInDay
+        )
 
         ElevatedButton(
             modifier = Modifier.fillMaxWidth().padding(8.dp),
