@@ -43,14 +43,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.core_utils.date_time_utils.convertStringDateToLong
 
 @ExperimentalMaterial3Api
 @Composable
-internal fun DatePickerDialog(viewModel: AddictionAddEditViewModel, date: String) {
-
+internal fun DatePickerDialog(
+    showDateDialog: Boolean,
+    updateDateDialogState: (Boolean) -> Unit,
+    onDateChange: (Long) -> Unit,
+    date: String
+) {
     val dateState = rememberDatePickerState(
         initialSelectedDateMillis = convertStringDateToLong(date),
         selectableDates = object : SelectableDates {
@@ -60,18 +63,18 @@ internal fun DatePickerDialog(viewModel: AddictionAddEditViewModel, date: String
         }
     )
 
-    if (viewModel.showDateDialog) {
+    if (showDateDialog) {
         androidx.compose.material3.DatePickerDialog(
             onDismissRequest = {
-                viewModel.showDateDialogHide()
+                updateDateDialogState(false)
             },
             confirmButton = {
                 Button(
                     onClick = {
                         if (dateState.selectedDateMillis != null) {
-                            viewModel.onDateChange(dateState.selectedDateMillis!!)
+                            onDateChange(dateState.selectedDateMillis!!)
                         }
-                        viewModel.showDateDialogHide()
+                        updateDateDialogState(false)
                     }
                 ) {
                     Text(text = stringResource(id = dev.misufoil.addictions.uikit.R.string.ok))
@@ -79,7 +82,7 @@ internal fun DatePickerDialog(viewModel: AddictionAddEditViewModel, date: String
             },
             dismissButton = {
                 Button(
-                    onClick = { viewModel.showDateDialogHide() }
+                    onClick = { updateDateDialogState(false) }
                 ) {
                     Text(text = stringResource(id = dev.misufoil.addictions.uikit.R.string.cancel))
                 }
@@ -223,3 +226,4 @@ fun PickerDialog(
         }
     }
 }
+

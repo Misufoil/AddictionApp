@@ -1,7 +1,6 @@
 package com.example.addictions_edit.presentation.view
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,8 +30,8 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,21 +47,19 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
 import dev.misufoil.addictions.theme.AddictionTheme
-import dev.misufoil.addictions.uikit.R
-import dev.misufoil.core_utils.date_time_utils.convertStringDateTimeToLong
 import dev.misufoil.core_utils.models.AddictionTypes
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
+import dev.misufoil.addictions.uikit.R as uikitR
 
 @Composable
 internal fun TypeComponent(
     text: String,
-    onClick: () -> Unit
+    updateBottomSheetState: (Boolean) -> Unit,
 ) {
     Text(
-        text = stringResource(id = R.string.select_addiction),
+        text = stringResource(id = uikitR.string.select_addiction),
         modifier = Modifier.padding(8.dp),
         style = AddictionTheme.typography.headlineSmall
     )
@@ -73,7 +70,7 @@ internal fun TypeComponent(
             .fillMaxWidth()
             .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large)
             .clickable {
-                onClick()
+                updateBottomSheetState(true)
             },
         colors = CardDefaults.cardColors(
             containerColor = AddictionTheme.colorScheme.surfaceVariant,
@@ -86,7 +83,7 @@ internal fun TypeComponent(
                 style = AddictionTheme.typography.bodyLarge
             )
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.baseline_keyboard_arrow_down_24),
+                imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_keyboard_arrow_down_24),
                 contentDescription = null,
                 modifier = Modifier.padding(16.dp).size(24.dp).clearAndSetSemantics {}
             )
@@ -98,18 +95,16 @@ internal fun TypeComponent(
 @ExperimentalMaterial3Api
 @Composable
 internal fun DateAndTimeComponent(
-    viewModel: AddictionAddEditViewModel,
+    updateDateDialogState: (Boolean) -> Unit,
+    updateTimeDialogState: (Boolean) -> Unit,
     date: String,
     time: String
 ) {
-
-
     Text(
-        text = stringResource(id = R.string.date_and_time),
+        text = stringResource(id = uikitR.string.date_and_time),
         modifier = Modifier.padding(8.dp),
         style = AddictionTheme.typography.headlineSmall
     )
-
 
     Card(
         modifier = Modifier
@@ -117,7 +112,7 @@ internal fun DateAndTimeComponent(
             .fillMaxWidth()
             .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large)
             .clickable {
-                viewModel.showDateDialogShow()
+                updateDateDialogState(true)
             },
         colors = CardDefaults.cardColors(
             containerColor = AddictionTheme.colorScheme.surfaceVariant,
@@ -133,7 +128,7 @@ internal fun DateAndTimeComponent(
                 style = AddictionTheme.typography.bodyLarge
             )
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.baseline_keyboard_arrow_down_24),
+                imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_keyboard_arrow_down_24),
                 contentDescription = null,
                 modifier = Modifier.padding(16.dp).size(24.dp).clearAndSetSemantics {}
             )
@@ -146,7 +141,7 @@ internal fun DateAndTimeComponent(
             .fillMaxWidth()
             .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large)
             .clickable {
-                viewModel.showTimeDialogShow()
+                updateTimeDialogState(true)
             },
         colors = CardDefaults.cardColors(
             containerColor = AddictionTheme.colorScheme.surfaceVariant,
@@ -159,49 +154,11 @@ internal fun DateAndTimeComponent(
                 style = AddictionTheme.typography.bodyLarge
             )
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.baseline_keyboard_arrow_down_24),
+                imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_keyboard_arrow_down_24),
                 contentDescription = null,
                 modifier = Modifier.padding(16.dp).size(24.dp).clearAndSetSemantics {}
             )
         }
-    }
-
-    if (viewModel.showDateDialog) {
-        DatePickerDialog(viewModel, date)
-    }
-
-    if (viewModel.showTimeDialog) {
-        val context = LocalContext.current
-
-        TimePickerDialog(
-            onCancel = {
-                viewModel.showTimeDialogHide()
-            },
-            onConfirm = { timePickerState ->
-                val hour = timePickerState.hour
-                val minute = timePickerState.minute
-                val currentMillis = System.currentTimeMillis()
-
-                val maxDateTimeReached =
-                    convertStringDateTimeToLong(
-                        viewModel.uiState.value.date,
-                        "%02d:%02d".format(hour, minute)
-                    )
-
-                if (maxDateTimeReached <= currentMillis) {
-                    viewModel.onTimeChange(Pair(hour, minute))
-                } else {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.time_not_come),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-                viewModel.showTimeDialogHide()
-            },
-            time = viewModel.uiState.collectAsState().value.time
-        )
     }
 }
 
@@ -209,13 +166,14 @@ internal fun DateAndTimeComponent(
 @ExperimentalMaterial3Api
 @Composable
 internal fun FrequencyOfUseComponent(
-    viewModel: AddictionAddEditViewModel,
+    onDaysPerWeekChange: (Int) -> Unit,
+    onTimesInDayChange: (Int) -> Unit,
     daysPerWeek: Int,
     timesInDay: Int
 ) {
     Log.d("FrequencyOfUseComponent", "FrequencyOfUseComponent")
     Text(
-        text = stringResource(id = R.string.frequency_of_use),
+        text = stringResource(id = uikitR.string.frequency_of_use),
         modifier = Modifier.padding(8.dp),
         style = AddictionTheme.typography.headlineSmall
     )
@@ -233,18 +191,18 @@ internal fun FrequencyOfUseComponent(
             horizontalArrangement = Arrangement.Start,
         ) {
             Text(
-                text = stringResource(id = R.string.days_per_week),
+                text = stringResource(id = uikitR.string.days_per_week),
                 modifier = Modifier.padding(16.dp).weight(1f),
                 style = AddictionTheme.typography.bodyLarge
             )
 
             IconButton(
-                onClick = { if (daysPerWeek > 1) viewModel.onDaysPerWeekChange(daysPerWeek - 1) },
+                onClick = { if (daysPerWeek > 1) onDaysPerWeekChange(daysPerWeek - 1) },
                 enabled = daysPerWeek > 1
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.baseline_remove_24),
-                    contentDescription = stringResource(id = R.string.reduce_days),
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_remove_24),
+                    contentDescription = stringResource(id = uikitR.string.reduce_days),
                     tint = if (daysPerWeek > 1) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
@@ -256,12 +214,12 @@ internal fun FrequencyOfUseComponent(
             )
 
             IconButton(
-                onClick = { if (daysPerWeek < 7) viewModel.onDaysPerWeekChange(daysPerWeek + 1) },
+                onClick = { if (daysPerWeek < 7) onDaysPerWeekChange(daysPerWeek + 1) },
                 enabled = daysPerWeek < 7
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.baseline_add_24),
-                    contentDescription = stringResource(id = R.string.increase_days),
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_add_24),
+                    contentDescription = stringResource(id = uikitR.string.increase_days),
                     tint = if (daysPerWeek < 7) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
@@ -283,18 +241,18 @@ internal fun FrequencyOfUseComponent(
             horizontalArrangement = Arrangement.Start,
         ) {
             Text(
-                text = stringResource(id = R.string.once_a_day),
+                text = stringResource(id = uikitR.string.once_a_day),
                 modifier = Modifier.padding(16.dp).weight(1f),
                 style = AddictionTheme.typography.bodyLarge
             )
 
             IconButton(
-                onClick = { if (timesInDay > 1) viewModel.onTimesInDayChange(timesInDay - 1) },
+                onClick = { if (timesInDay > 1) onTimesInDayChange(timesInDay - 1) },
                 enabled = timesInDay > 1
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.baseline_remove_24),
-                    contentDescription = stringResource(id = R.string.increase_times),
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_remove_24),
+                    contentDescription = stringResource(id = uikitR.string.increase_times),
                     tint = if (timesInDay > 1) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
@@ -306,12 +264,12 @@ internal fun FrequencyOfUseComponent(
             )
 
             IconButton(
-                onClick = { if (timesInDay < 100) viewModel.onTimesInDayChange(timesInDay + 1) },
+                onClick = { if (timesInDay < 100) onTimesInDayChange(timesInDay + 1) },
                 enabled = timesInDay < 100
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.baseline_add_24),
-                    contentDescription = stringResource(id = R.string.reduce_times),
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_add_24),
+                    contentDescription = stringResource(id = uikitR.string.reduce_times),
                     tint = if (timesInDay < 100) IconButtonDefaults.iconButtonColors().contentColor else IconButtonDefaults.iconButtonColors().disabledContentColor
                 )
             }
@@ -323,7 +281,8 @@ internal fun FrequencyOfUseComponent(
 @ExperimentalMaterial3Api
 @Composable
 internal fun ModalBottomSheetComponent(
-    viewModel: AddictionAddEditViewModel,
+    onTypeChange: (String) -> Unit,
+    updateBottomSheetState: (Boolean) -> Unit,
     padding: PaddingValues
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -331,14 +290,14 @@ internal fun ModalBottomSheetComponent(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     var customAddiction by remember { mutableStateOf("") }
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
     var showError by remember { mutableStateOf(false) }
     val maxChar = 15
 
     ModalBottomSheet(
         modifier = Modifier.fillMaxSize(),
         onDismissRequest = {
-            viewModel.onBottomSheetHide()
+            updateBottomSheetState(false)
         },
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
@@ -351,7 +310,7 @@ internal fun ModalBottomSheetComponent(
                             selectedTabIndex = 0
                             showError = false
                         },
-                        text = { Text(text = context.getString(R.string.predefined_list)) }
+                        text = { Text(text = context.getString(uikitR.string.predefined_list)) }
                     )
                     Tab(
                         selected = selectedTabIndex == 1,
@@ -359,7 +318,7 @@ internal fun ModalBottomSheetComponent(
                             selectedTabIndex = 1
                             showError = false
                         },
-                        text = { Text(text = context.getString(R.string.custom_input)) }
+                        text = { Text(text = context.getString(uikitR.string.custom_input)) }
                     )
                 }
 
@@ -382,13 +341,13 @@ internal fun ModalBottomSheetComponent(
                                         )
                                         .clickable {
                                             coroutineScope.launch {
-                                                viewModel.onTypeChange(
+                                                onTypeChange(
                                                     AddictionTypes.getDescription(
                                                         context,
                                                         addiction
                                                     )
                                                 )
-                                                viewModel.onBottomSheetHide()
+                                                updateBottomSheetState(false)
                                                 modalBottomSheetState.hide()
                                             }
                                         },
@@ -436,7 +395,7 @@ internal fun ModalBottomSheetComponent(
                                         showError = false
                                     }
                                 },
-                                label = { Text(text = context.getString(R.string.your_addiction)) },
+                                label = { Text(text = context.getString(uikitR.string.your_addiction)) },
                                 singleLine = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -445,7 +404,7 @@ internal fun ModalBottomSheetComponent(
                                 supportingText = {
                                     if (showError) {
                                         Text(
-                                            text = context.getString(R.string.enter_custom_addiction),
+                                            text = context.getString(uikitR.string.enter_custom_addiction),
                                             color = MaterialTheme.colorScheme.error,
                                             modifier = Modifier.fillMaxWidth(),
                                             textAlign = TextAlign.Start,
@@ -464,8 +423,8 @@ internal fun ModalBottomSheetComponent(
                                 onClick = {
                                     if (customAddiction.isNotBlank()) {
                                         coroutineScope.launch {
-                                            viewModel.onTypeChange(customAddiction)
-                                            viewModel.onBottomSheetHide()
+                                            onTypeChange(customAddiction)
+                                            updateBottomSheetState(false)
                                             modalBottomSheetState.hide()
                                         }
                                     } else {
@@ -477,11 +436,11 @@ internal fun ModalBottomSheetComponent(
                                     .padding(8.dp),
                             ) {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.baseline_save_24),
-                                    contentDescription = stringResource(id = R.string.save_button)
+                                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_save_24),
+                                    contentDescription = stringResource(id = uikitR.string.save_button)
                                 )
                                 Spacer(modifier = Modifier.size(4.dp))
-                                Text(stringResource(id = R.string.save_button))
+                                Text(stringResource(id = uikitR.string.save_button))
                             }
                         }
                     }

@@ -26,6 +26,6 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.courutines.core)
-
+    implementation(libs.dagger.hilt.android)
     implementation(project(":addictions-uikit"))
 }

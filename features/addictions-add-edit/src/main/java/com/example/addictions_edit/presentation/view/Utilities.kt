@@ -12,10 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.addictions_edit.presentation.viewmodel.AddictionAddEditViewModel
+import com.example.addictions_edit.presentation.viewmodel.State
 
 @Composable
-internal fun ErrorMessage(state: AddictionAddEditViewModel.State.Error, padding: PaddingValues) {
+internal fun ErrorMessage(state: State.Error, padding: PaddingValues) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -28,7 +28,7 @@ internal fun ErrorMessage(state: AddictionAddEditViewModel.State.Error, padding:
 
 @Composable
 internal fun ProgressIndicator(
-    state: AddictionAddEditViewModel.State.Loading,
+    state: State.Loading,
     padding: PaddingValues
 ) {
     Column(modifier = Modifier.padding(padding)) {

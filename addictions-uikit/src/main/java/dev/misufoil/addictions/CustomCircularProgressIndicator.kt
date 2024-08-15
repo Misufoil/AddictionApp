@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -27,14 +26,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.misufoil.addictions.uikit.R
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-
+import dev.misufoil.addictions.uikit.R as uikitR
 
 @Composable
 fun CustomCircularProgressIndicator(
@@ -93,9 +91,9 @@ fun CustomCircularProgressIndicator(
     val sweepAngle = progress * 3.6f
 
     val milestoneText = if (nextMilestone != null) {
-        stringResource(id = R.string.goal_days, nextMilestone.toDays())
+        stringResource(id = uikitR.string.goal_days, nextMilestone.toDays())
     } else {
-        stringResource(id = R.string.goal_achieved)
+        stringResource(id = uikitR.string.goal_achieved)
     }
 
     var textSize by remember { mutableStateOf(24.sp) }
@@ -249,7 +247,7 @@ fun formatDurationStyled(
             style = textStyleInCircle.toSpanStyle()
                 .copy(color = letterColor, fontSize = letterFontSize)
         ) {
-            append(stringResource(id = R.string.D))
+            append(stringResource(id = uikitR.string.D))
 
         }
         withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
@@ -259,7 +257,7 @@ fun formatDurationStyled(
             style = textStyleInCircle.toSpanStyle()
                 .copy(color = letterColor, fontSize = letterFontSize)
         ) {
-            append(stringResource(id = R.string.H))
+            append(stringResource(id = uikitR.string.H))
         }
         withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
             append("%02d".format(minutes))
@@ -268,7 +266,7 @@ fun formatDurationStyled(
             style = textStyleInCircle.toSpanStyle()
                 .copy(color = letterColor, fontSize = letterFontSize)
         ) {
-            append(stringResource(id = R.string.M))
+            append(stringResource(id = uikitR.string.M))
         }
         if (!circleIsSmall) {
             withStyle(style = textStyleInCircle.toSpanStyle().copy(color = circleColor)) {
@@ -278,7 +276,7 @@ fun formatDurationStyled(
                 style = textStyleInCircle.toSpanStyle()
                     .copy(color = letterColor, fontSize = letterFontSize)
             ) {
-                append(stringResource(id = R.string.S))
+                append(stringResource(id = uikitR.string.S))
             }
         }
     }

@@ -8,5 +8,4 @@ plugins {
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.kapt) apply false
     alias(libs.plugins.compose.compiler) apply false
-    alias(libs.plugins.androidx.room) apply false
 }

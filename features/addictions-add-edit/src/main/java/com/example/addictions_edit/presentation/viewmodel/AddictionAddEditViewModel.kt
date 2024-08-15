@@ -1,10 +1,6 @@
 package com.example.addictions_edit.presentation.viewmodel
 
 
-import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,8 +9,8 @@ import com.example.addictions_edit.usecase.GetAddictionByIdUseCase
 import com.example.addictions_edit.usecase.GetAddictionByTypeUseCase
 import com.example.addictions_edit.usecase.SavaAddictionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.misufoil.addictions_data.RequestResult
+import dev.misufoil.core_utils.ResourceManager
 import dev.misufoil.core_utils.date_time_utils.convertDateToString
 import dev.misufoil.core_utils.date_time_utils.convertLongToStringDate
 import dev.misufoil.core_utils.date_time_utils.formatTime
@@ -27,68 +23,84 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Provider
+import dev.misufoil.addictions.uikit.R as uikitR
 
 @HiltViewModel
 internal class AddictionAddEditViewModel @Inject constructor(
     private val getAddictionByIdUseCase: Provider<GetAddictionByIdUseCase>,
     private val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
     private val savaAddictionUseCase: Provider<SavaAddictionUseCase>,
-    @ApplicationContext private val context: Context,
+    private val resourceManager: ResourceManager,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var state: State = State.Loading()
         private set
 
-    private val _uiState: MutableStateFlow<AddictionUI> by lazy {
-        MutableStateFlow(
-            AddictionUI(
+    private val _uiState: MutableStateFlow<AddictionUI> = MutableStateFlow(AddictionUI.empty)
+    val uiState: StateFlow<AddictionUI> = _uiState.asStateFlow()
+
+    private val _showBottomSheet: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showBottomSheet: StateFlow<Boolean> = _showBottomSheet.asStateFlow()
+
+    private val _toastMessageState: MutableStateFlow<String?> = MutableStateFlow(null)
+    val toastMessageState: StateFlow<String?> = _toastMessageState.asStateFlow()
+
+    private val _timeDialogState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val timeDialogState: StateFlow<Boolean> = _timeDialogState.asStateFlow()
+
+    private val _dateDialogState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val dateDialogState: StateFlow<Boolean> = _dateDialogState.asStateFlow()
+
+
+    init {
+        val savedParam = savedStateHandle.get<String>("addictionId")?.toInt()
+        if (savedParam == -1) {
+            val startUi = AddictionUI(
                 id = null,
-                type = context.getString(dev.misufoil.addictions.uikit.R.string.alcohol),
+                type = resourceManager.getStringById(uikitR.string.alcohol),
                 date = convertDateToString(LocalDate.now()),
                 time = getCurrentTimeString(),
                 daysPerWeek = 1,
                 timesInDay = 1,
             )
-        )
+
+            _uiState.update { startUi }
+            state = State.Success(startUi)
+
+        } else if (savedParam != null) {
+            viewModelScope.launch {
+                state = State.Loading()
+                val result = getAddictionByIdUseCase.get().invoke(savedParam)
+
+                state = result.toState()
+
+                if (result is RequestResult.Success) {
+                    initUi(result.data)
+                } else {
+                    println("Error fetching data: $result")
+                }
+            }
+        } else {
+            state = State.Error()
+        }
     }
 
-    val uiState: StateFlow<AddictionUI> = _uiState.asStateFlow()
-
-    var showBottomSheet by mutableStateOf(false)
-        private set
-
-    var toastMessage by mutableStateOf<String?>(null)
-        private set
-
-    fun onBottomSheetShow() {
-        showBottomSheet = true
+    fun onSaveButtonClick() {
+        viewModelScope.launch {
+            saveAddiction()
+        }
+    }
+    fun updateBottomSheetState(show: Boolean) {
+        _showBottomSheet.update { show }
     }
 
-    fun onBottomSheetHide() {
-        showBottomSheet = false
+    fun updateTimeDialogState(show: Boolean) {
+        _timeDialogState.update { show }
     }
 
-    var showDateDialog by mutableStateOf(false)
-        private set
-
-    fun showDateDialogShow() {
-        showDateDialog = true
-    }
-
-    fun showDateDialogHide() {
-        showDateDialog = false
-    }
-
-    var showTimeDialog by mutableStateOf(false)
-        private set
-
-    fun showTimeDialogShow() {
-        showTimeDialog = true
-    }
-
-    fun showTimeDialogHide() {
-        showTimeDialog = false
+    fun updateDateDialogState(show: Boolean) {
+        _dateDialogState.update { show }
     }
 
     fun onTypeChange(type: String) {
@@ -121,59 +133,35 @@ internal class AddictionAddEditViewModel @Inject constructor(
         }
     }
 
-    init {
-        val savedParam = savedStateHandle.get<String>("addictionId")?.toInt()
-        if (savedParam == -1) {
-            state = State.Success(_uiState.value)
-        } else if (savedParam != null) {
-            viewModelScope.launch {
-                state = State.Loading()
-                val result = getAddictionByIdUseCase.get().invoke(savedParam)
+    fun onToastMessageStateChange(toastText: String?) {
+        _toastMessageState.update { toastText }
+    }
 
-                state = result.toState()
-
-                if (result is RequestResult.Success) {
-                    initUi(result.data)
-                } else {
-                    println("Error fetching data: $result")
-                }
-            }
-        } else {
-            state = State.Error()
+    private suspend fun saveAddiction() {
+        val existingAddiction = getAddictionByTypeUseCase.get().invoke(uiState.value.type)
+        if (existingAddiction is RequestResult.Success && existingAddiction.data.id != uiState.value.id) {
+            onToastMessageStateChange(resourceManager.getStringById(uikitR.string.addiction_exists_error))
+            return
         }
+        savaAddictionUseCase.get().invoke(uiState.value)
     }
 
     private suspend fun initUi(addiction: AddictionUI) {
         _uiState.emit(addiction)
     }
+}
 
-    private fun RequestResult<AddictionUI>.toState(): State {
-        return when (this) {
-            is RequestResult.Error -> State.Error(data)
-            is RequestResult.InProgress -> State.Loading(data)
-            is RequestResult.Success -> State.Success(data)
-        }
-    }
+internal sealed class State(open val addiction: AddictionUI?) {
+    data object None : State(addiction = null)
+    class Loading(addiction: AddictionUI? = null) : State(addiction)
+    class Error(addiction: AddictionUI? = null) : State(addiction)
+    class Success(override val addiction: AddictionUI) : State(addiction)
+}
 
-    internal sealed class State(open val addiction: AddictionUI?) {
-        data object None : State(addiction = null)
-        class Loading(addiction: AddictionUI? = null) : State(addiction)
-        class Error(addiction: AddictionUI? = null) : State(addiction)
-        class Success(override val addiction: AddictionUI) : State(addiction)
-    }
-
-    suspend fun saveAddiction() {
-        val existingAddiction = getAddictionByTypeUseCase.get().invoke(uiState.value.type)
-        if (existingAddiction is RequestResult.Success && existingAddiction.data.id != uiState.value.id) {
-            toastMessage =
-                context.getString(dev.misufoil.addictions.uikit.R.string.addiction_exists_error)
-            return
-        }
-
-        savaAddictionUseCase.get().invoke(uiState.value)
-    }
-
-    fun clearToastMessage() {
-        toastMessage = null
+private fun RequestResult<AddictionUI>.toState(): State {
+    return when (this) {
+        is RequestResult.Error -> State.Error(data)
+        is RequestResult.InProgress -> State.Loading(data)
+        is RequestResult.Success -> State.Success(data)
     }
 }

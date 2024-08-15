@@ -1,4 +1,4 @@
-package dev.misufoil.addictionapp
+package dev.misufoil.addictionapp.di
 
 import android.content.Context
 import dagger.Module

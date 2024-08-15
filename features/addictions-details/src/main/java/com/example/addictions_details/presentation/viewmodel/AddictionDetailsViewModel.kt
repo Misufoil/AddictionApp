@@ -22,7 +22,6 @@ internal class AddictionDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-
     var state: State = State.Loading()
         private set
 
@@ -37,15 +36,15 @@ internal class AddictionDetailsViewModel @Inject constructor(
                 state = State.Loading()
                 //val addictionTypes = AddictionTypes.fromDescription(savedType)
                 //if (addictionTypes != null) {
-                    val result = getAddictionByTypeUseCase.get().invoke(addictionId.toInt())
-                    state = result.toState()
-                    if (result is RequestResult.Success) {
-                        //addiction = result.data
-                        initUi(result.data)
-                    } else {
-                        // Logging for debugging
-                        println("Error fetching data: $result")
-                    }
+                val result = getAddictionByTypeUseCase.get().invoke(addictionId.toInt())
+                state = result.toState()
+                if (result is RequestResult.Success) {
+                    //addiction = result.data
+                    initUi(result.data)
+                } else {
+                    // Logging for debugging
+                    println("Error fetching data: $result")
+                }
 //                } else {
 //                    state = State.Error() // Handle the error if the type is not found
 //                }
@@ -53,26 +52,6 @@ internal class AddictionDetailsViewModel @Inject constructor(
         } else {
             state = State.Error()
         }
-    }
-
-    private fun initUi(data: AddictionUI) {
-
-    }
-
-
-    private fun RequestResult<AddictionUI>.toState(): State {
-        return when (this) {
-            is RequestResult.Error -> State.Error(data)
-            is RequestResult.InProgress -> State.Loading(data)
-            is RequestResult.Success -> State.Success(data)
-        }
-    }
-
-    internal sealed class State(open val addiction: AddictionUI?) {
-        data object None : State(addiction = null)
-        class Loading(addiction: AddictionUI? = null) : State(addiction)
-        class Error(addiction: AddictionUI? = null) : State(addiction)
-        class Success(override val addiction: AddictionUI) : State(addiction)
     }
 
     fun showDeleteDialog() {
@@ -88,4 +67,22 @@ internal class AddictionDetailsViewModel @Inject constructor(
         hideDeleteDialog()
     }
 
+    private fun initUi(data: AddictionUI) {
+
+    }
+}
+
+internal sealed class State(open val addiction: AddictionUI?) {
+    data object None : State(addiction = null)
+    class Loading(addiction: AddictionUI? = null) : State(addiction)
+    class Error(addiction: AddictionUI? = null) : State(addiction)
+    class Success(override val addiction: AddictionUI) : State(addiction)
+}
+
+private fun RequestResult<AddictionUI>.toState(): State {
+    return when (this) {
+        is RequestResult.Error -> State.Error(data)
+        is RequestResult.InProgress -> State.Loading(data)
+        is RequestResult.Success -> State.Success(data)
+    }
 }

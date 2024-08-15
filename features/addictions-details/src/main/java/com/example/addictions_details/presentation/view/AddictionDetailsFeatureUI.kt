@@ -37,15 +37,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.addictions_details.models.AddictionUI
 import com.example.addictions_details.presentation.viewmodel.AddictionDetailsViewModel
+import com.example.addictions_details.presentation.viewmodel.State
 import dev.misufoil.addictions.CustomCircularProgressIndicator
 import dev.misufoil.addictions.theme.AddictionTheme
-import dev.misufoil.addictions.uikit.R
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import dev.misufoil.addictions.uikit.R as uikitR
 
 @ExperimentalFoundationApi
 @Composable
@@ -77,10 +78,10 @@ private fun AddictionAddEditScreen(
         modifier = Modifier.background(AddictionTheme.colorScheme.surfaceVariant)
     ) { padding ->
         when (currentState) {
-            is AddictionDetailsViewModel.State.None -> Unit
-            is AddictionDetailsViewModel.State.Error -> ErrorMessage(currentState, padding)
-            is AddictionDetailsViewModel.State.Loading -> ProgressIndicator(currentState, padding)
-            is AddictionDetailsViewModel.State.Success -> AddictionScreen(
+            is State.None -> Unit
+            is State.Error -> ErrorMessage(currentState, padding)
+            is State.Loading -> ProgressIndicator(currentState, padding)
+            is State.Success -> AddictionScreen(
                 currentState.addiction,
                 viewModel,
                 navigateToAddEdit,
@@ -133,11 +134,11 @@ private fun AddictionScreen(
                 },
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.baseline_edit_square_24),
-                    contentDescription = stringResource(id = R.string.edit_addiction)
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_edit_square_24),
+                    contentDescription = stringResource(id = uikitR.string.edit_addiction)
                 )
                 Spacer(modifier = Modifier.size(4.dp))
-                Text(text = stringResource(id = R.string.edit_button))
+                Text(text = stringResource(id = uikitR.string.edit_button))
             }
 
             ElevatedButton(
@@ -145,8 +146,6 @@ private fun AddictionScreen(
                 onClick = {
                     coroutineScope.launch {
                         viewModel.showDeleteDialog()
-                        //viewModel.deleteAddiction()
-                        //onPopBackStack()
                     }
                 },
                 colors = ButtonDefaults.elevatedButtonColors(
@@ -155,57 +154,13 @@ private fun AddictionScreen(
                 )
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.baseline_delete_outline_24),
-                    contentDescription = stringResource(id = R.string.delete_addiction)
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_delete_outline_24),
+                    contentDescription = stringResource(id = uikitR.string.delete_addiction)
                 )
                 Spacer(modifier = Modifier.size(4.dp))
-                Text(text = stringResource(id = R.string.delete_button))
+                Text(text = stringResource(id = uikitR.string.delete_button))
             }
-
-//            AssistChip(
-//                onClick = {
-//                    navigateToAddEdit(viewModel.state.addiction?.type.toString())
-//                },
-//                colors = AssistChipDefaults.assistChipColors(
-//                    leadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-//                ),
-//                leadingIcon = {
-//                    Icon(
-//                        imageVector = ImageVector.vectorResource(R.drawable.baseline_edit_square_24),
-//                        contentDescription = stringResource(id = R.string.edit_habit)
-//                    )
-//                },
-//                label = {
-//                    Text(text = stringResource(id = R.string.edit_button))
-//                }
-//            )
-//
-//            AssistChip(
-//                onClick = {
-//
-//                },
-//                colors = AssistChipDefaults.assistChipColors(
-//                    leadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-//                ),
-//                leadingIcon = {
-//                    Icon(
-//                        imageVector = ImageVector.vectorResource(R.drawable.baseline_edit_square_24),
-//                        contentDescription = stringResource(id = R.string.delete_habit)
-//                    )
-//                },
-//                label = {
-//                    Text(text = stringResource(id = R.string.delete_button))
-//                }
-//            )
         }
-//        Button(
-//            onClick = {
-//                navigateToAddEdit(viewModel.state.addiction?.type.toString())
-//            },
-//            Modifier.fillMaxWidth()
-//        ) {
-//            Text("Редактировать")
-//        }
     }
 }
 
@@ -218,8 +173,6 @@ internal fun InfoSlider(addiction: AddictionUI) {
     ) {
         val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy HH:mm", Locale.getDefault())
-        //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm", Locale.getDefault())
         val date = LocalDate.parse(addiction.date, dateFormatter)
         val time = LocalTime.parse(addiction.time, timeFormatter)
 
@@ -318,7 +271,7 @@ internal fun InfoSlider(addiction: AddictionUI) {
 
 
 @Composable
-private fun ErrorMessage(state: AddictionDetailsViewModel.State.Error, padding: PaddingValues) {
+private fun ErrorMessage(state: State.Error, padding: PaddingValues) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -331,7 +284,7 @@ private fun ErrorMessage(state: AddictionDetailsViewModel.State.Error, padding: 
 
 @Composable
 private fun ProgressIndicator(
-    state: AddictionDetailsViewModel.State.Loading,
+    state: State.Loading,
     padding: PaddingValues
 ) {
     Column(modifier = Modifier.padding(padding)) {
@@ -351,7 +304,7 @@ private fun ProgressIndicator(
 fun DeleteConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        title = { Text(text = stringResource(id = R.string.delete_quation)) },
+        title = { Text(text = stringResource(id = uikitR.string.delete_quation)) },
         confirmButton = {
             ElevatedButton(
                 onClick = { onConfirm() },
@@ -360,37 +313,16 @@ fun DeleteConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                     contentColor = MaterialTheme.colorScheme.onError,
                 )
             ) {
-                Text(text = stringResource(id = R.string.delete_button))
+                Text(text = stringResource(id = uikitR.string.delete_button))
             }
         },
         dismissButton = {
             ElevatedButton(
                 onClick = { onDismiss() }
             ) {
-                Text(text = stringResource(id = R.string.cancel))
+                Text(text = stringResource(id = uikitR.string.cancel))
             }
         }
     )
 }
 
-//ElevatedButton(
-//            modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
-//            onClick = {
-//                coroutineScope.launch {
-//                    viewModel.showDeleteDialog()
-//                    //viewModel.deleteAddiction()
-//                    //onPopBackStack()
-//                }
-//            },
-//            colors = ButtonDefaults.elevatedButtonColors(
-//                containerColor = MaterialTheme.colorScheme.error,
-//                contentColor = MaterialTheme.colorScheme.onError,
-//            )
-//        ) {
-//            Icon(
-//                imageVector = ImageVector.vectorResource(R.drawable.baseline_delete_outline_24),
-//                contentDescription = stringResource(id = R.string.delete_habit)
-//            )
-//            Spacer(modifier = Modifier.size(4.dp))
-//            Text(text = stringResource(id = R.string.delete_button))
-//        }

@@ -1,6 +1,7 @@
 package dev.misufoil.core_utils.models
 
 import android.content.Context
+import javax.inject.Inject
 
 
 enum class AddictionTypes(val descriptionResId: Int) {
@@ -23,27 +24,6 @@ enum class AddictionTypes(val descriptionResId: Int) {
     WORK(dev.misufoil.addictions.uikit.R.string.work),
     VIDEO_GAMES(dev.misufoil.addictions.uikit.R.string.video_games),
     ENERGY_DRINKS(dev.misufoil.addictions.uikit.R.string.energy_drinks);
-    //<string name="alcohol">Alcohol</string>
-    //    <string name="vaping">Vaping</string>
-    //    <string name="junk_food">Junk food</string>
-    //    <string name="caffeine">Caffeine</string>
-    //    <string name="masturbation">Masturbation</string>
-    //    <string name="drug">Drug</string>
-    //    <string name="nicotine">Nicotine</string>
-    //    <string name="gambling">Gambling</string>
-    //    <string name="internet">Internet</string>
-    //    <string name="pornography">Pornography</string>
-    //    <string name="sex">Sex</string>
-    //    <string name="cigarettes">cigarettes</string>
-    //    <string name="sugar">sugar</string>
-    //    <string name="tobacco">Tobacco</string>
-    //    <string name="food">Food</string>
-    //    <string name="shopping">Shopping</string>
-    //    <string name="work">Work</string>
-    //    <string name="video_games">Video games</string>
-    //    <string name="energy_drinks">Energy drinks</string>
-
-    //override fun toString() = description
 
     companion object {
         fun fromDescription(context: Context, description: String): AddictionTypes? {

@@ -8,10 +8,8 @@ import dev.misufoil.addictions_home.models.AddictionUI
 import dev.misufoil.addictions_home.usecase.DeleteAddictionUseCase
 import dev.misufoil.addictions_home.usecase.GetAllAddictionsUseCase
 import dev.misufoil.addictions_home.usecase.InsertAddictionUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -38,19 +36,8 @@ internal class AddictionsMainViewModel @Inject constructor(
     suspend fun undoDelete() {
         lastDeletedAddiction?.let {
             insertAddictionUseCase.get().invoke(it)
-            // Re-add the deleted addiction (you might need to implement this in your repository)
-            // For example: repository.addAddictionToLocalDb(it.toAddiction())
         }
         lastDeletedAddiction = null
-    }
-}
-
-
-private fun RequestResult<List<AddictionUI>>.toState(): State {
-    return when (this) {
-        is RequestResult.Error -> State.Error(data)
-        is RequestResult.InProgress -> State.Loading(data)
-        is RequestResult.Success -> State.Success(data)
     }
 }
 
@@ -59,4 +46,12 @@ internal sealed class State(open val addictions: List<AddictionUI>?) {
     class Loading(addictions: List<AddictionUI>? = null) : State(addictions)
     class Error(addictions: List<AddictionUI>? = null) : State(addictions)
     class Success(override val addictions: List<AddictionUI>) : State(addictions)
+}
+
+private fun RequestResult<List<AddictionUI>>.toState(): State {
+    return when (this) {
+        is RequestResult.Error -> State.Error(data)
+        is RequestResult.InProgress -> State.Loading(data)
+        is RequestResult.Success -> State.Success(data)
+    }
 }
