@@ -48,12 +48,14 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
-
     implementation(libs.kotlinx.courutines.android)
 
+    implementation(libs.androidx.navigation.compose)
+
     implementation(libs.androidx.hilt)
+
+    implementation(libs.dagger.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
 
     implementation(project(":core-utils"))
     implementation(project(":addictions-data"))

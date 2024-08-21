@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,7 +20,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +38,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.addictions_details.models.AddictionUI
@@ -123,6 +132,8 @@ private fun AddictionScreen(
 
         InfoSlider(addiction)
 
+        SavingsScreen()
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -164,9 +175,72 @@ private fun AddictionScreen(
     }
 }
 
+@Composable
+fun SavingsScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "На сегодняшний день сэкономлено",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = AddictionTheme.colorScheme.surfaceVariant,
+            ),
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Сэкономлено денег",
+                        style = AddictionTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "2 970,00 ₽",
+                        style = AddictionTheme.typography.titleMedium,
+                        color = AddictionTheme.colorScheme.primary
+                    )
+                }
+                Spacer(modifier = Modifier.padding(vertical = 8.dp).size(1.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Сэкономленные калории",
+                        style = AddictionTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "2970",
+                        style = AddictionTheme.typography.titleMedium,
+                        color = AddictionTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
+}
+
+
 @ExperimentalFoundationApi
 @Composable
-internal fun InfoSlider(addiction: AddictionUI) {
+@Preview
+internal fun InfoSlider(@PreviewParameter(AddictionUIPreviewParameterProvider::class) addiction: AddictionUI) {
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -185,6 +259,7 @@ internal fun InfoSlider(addiction: AddictionUI) {
             state = state,
             beyondBoundsPageCount = 1,
             modifier = Modifier.fillMaxWidth()
+                .background(color = AddictionTheme.colorScheme.surfaceVariant)
         ) { page: Int ->
             when (page) {
                 0 -> {
@@ -194,27 +269,33 @@ internal fun InfoSlider(addiction: AddictionUI) {
                             .fillMaxWidth()
                             .background(
                                 color = AddictionTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(8.dp)
                             ),
                         contentAlignment = Alignment.Center
-                        //colors = CardDefaults.cardColors(
-                        //            containerColor = AddictionTheme.colorScheme.surfaceVariant,
-                        //        ),
-                        //        shape = MaterialTheme.shapes.large
+
                     ) {
-                        CustomCircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .size(300.dp),
-                            initialValue = addictionDate,
-                            circleColor = AddictionTheme.colorScheme.primary,
-                            secondaryCircleColor = MaterialTheme.colorScheme.secondary,
-                            circleRadius = 300f,
-                            textStyleInCircle = MaterialTheme.typography.headlineMedium,
-                            textStyleUnderCircle = MaterialTheme.typography.headlineMedium,
-                            smallCircle = false,
-                            onPositionChange = {}
-                        )
+                        Column(
+                            modifier = Modifier.size(368.dp).padding(vertical = 24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                stringResource(id = uikitR.string.start_sober),
+                                modifier = Modifier.padding(vertical = 16.dp),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = AddictionTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.padding(20.dp))
+                            Text(
+                                addiction.date,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = AddictionTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.padding(8.dp))
+                            Text(
+                                addiction.time,
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = AddictionTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
 
@@ -225,7 +306,6 @@ internal fun InfoSlider(addiction: AddictionUI) {
                             .fillMaxWidth()
                             .background(
                                 color = AddictionTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(8.dp)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
@@ -251,6 +331,7 @@ internal fun InfoSlider(addiction: AddictionUI) {
                 .wrapContentHeight()
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
+                .background(color = AddictionTheme.colorScheme.surfaceVariant)
                 .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.Center
         ) {
@@ -267,6 +348,19 @@ internal fun InfoSlider(addiction: AddictionUI) {
             }
         }
     }
+}
+
+class AddictionUIPreviewParameterProvider : PreviewParameterProvider<AddictionUI> {
+    override val values: Sequence<AddictionUI> = sequenceOf(
+        AddictionUI(
+            id = 222,
+            type = "Example Type",
+            date = LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
+            time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
+            daysPerWeek = 3,
+            timesInDay = 2
+        )
+    )
 }
 
 

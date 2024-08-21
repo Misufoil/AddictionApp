@@ -1,6 +1,6 @@
 package com.example.addictions_details.models
 
-internal data class AddictionUI(
+data class AddictionUI(
     val id: Int?,
     val type: String,
     val date: String,

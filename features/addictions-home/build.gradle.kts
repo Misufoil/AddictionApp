@@ -58,7 +58,6 @@ dependencies {
     implementation(libs.androidx.hilt)
 
     implementation(libs.dagger.hilt.android)
-    implementation(libs.places)
     kapt(libs.dagger.hilt.compiler)
 
     implementation(project(":core-utils"))

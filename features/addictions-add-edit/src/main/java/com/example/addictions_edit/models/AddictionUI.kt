@@ -22,4 +22,3 @@ internal data class AddictionUI(
         )
     }
 }
-

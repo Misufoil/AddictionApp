@@ -13,10 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="AddictionsEditScreen">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="AddictionEditScreen">
+      <SelectionState runConfigName="InfoSlider">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
