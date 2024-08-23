@@ -17,8 +17,8 @@ import javax.inject.Provider
 
 @HiltViewModel
 internal class AddictionDetailsViewModel @Inject constructor(
-    val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
-    val deleteAddictionUseCase: Provider<DeleteAddictionUseCase>,
+    private val getAddictionByTypeUseCase: Provider<GetAddictionByTypeUseCase>,
+    private val deleteAddictionUseCase: Provider<DeleteAddictionUseCase>,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,20 +34,13 @@ internal class AddictionDetailsViewModel @Inject constructor(
         if (addictionId != null) {
             viewModelScope.launch {
                 state = State.Loading()
-                //val addictionTypes = AddictionTypes.fromDescription(savedType)
-                //if (addictionTypes != null) {
                 val result = getAddictionByTypeUseCase.get().invoke(addictionId.toInt())
                 state = result.toState()
                 if (result is RequestResult.Success) {
-                    //addiction = result.data
                     initUi(result.data)
                 } else {
-                    // Logging for debugging
                     println("Error fetching data: $result")
                 }
-//                } else {
-//                    state = State.Error() // Handle the error if the type is not found
-//                }
             }
         } else {
             state = State.Error()

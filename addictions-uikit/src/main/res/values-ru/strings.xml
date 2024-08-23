@@ -71,4 +71,15 @@
     <string name="addiction_removed">Зависимость удалена</string>
 
     <string name="start_sober">"Начало моей трезвой жизни"</string>
+
+
+    <string name="overall_saving">"На сегодняшний день сэкономлено"</string>
+
+    <string name="money_saved">"Сэкономлено денег"</string>
+    <string name="calories_saved">"Сэкономленные калории"</string>
+
+    <string name="money_per_day">"Начало моей трезвой жизни"</string>
+    <string name="calories_per_day">"Начало моей трезвой жизни"</string>
+
+    <string name="invalid_input_error">"Пожалуйста, введите число"</string>
 </resources>

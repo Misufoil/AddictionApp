@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +28,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -41,9 +45,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -275,8 +281,9 @@ internal fun FrequencyOfUseComponent(
             }
         }
     }
-
 }
+
+
 
 @ExperimentalMaterial3Api
 @Composable
@@ -310,7 +317,7 @@ internal fun ModalBottomSheetComponent(
                             selectedTabIndex = 0
                             showError = false
                         },
-                        text = { Text(text = context.getString(uikitR.string.predefined_list)) }
+                        text = { Text(text = stringResource(uikitR.string.predefined_list)) }
                     )
                     Tab(
                         selected = selectedTabIndex == 1,
@@ -318,7 +325,7 @@ internal fun ModalBottomSheetComponent(
                             selectedTabIndex = 1
                             showError = false
                         },
-                        text = { Text(text = context.getString(uikitR.string.custom_input)) }
+                        text = { Text(text = stringResource(uikitR.string.custom_input)) }
                     )
                 }
 
@@ -395,7 +402,7 @@ internal fun ModalBottomSheetComponent(
                                         showError = false
                                     }
                                 },
-                                label = { Text(text = context.getString(uikitR.string.your_addiction)) },
+                                label = { Text(text = stringResource(uikitR.string.your_addiction)) },
                                 singleLine = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -404,7 +411,7 @@ internal fun ModalBottomSheetComponent(
                                 supportingText = {
                                     if (showError) {
                                         Text(
-                                            text = context.getString(uikitR.string.enter_custom_addiction),
+                                            text = stringResource(uikitR.string.enter_custom_addiction),
                                             color = MaterialTheme.colorScheme.error,
                                             modifier = Modifier.fillMaxWidth(),
                                             textAlign = TextAlign.Start,

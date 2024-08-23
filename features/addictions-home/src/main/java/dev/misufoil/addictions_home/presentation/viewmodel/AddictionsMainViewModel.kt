@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -28,16 +29,21 @@ internal class AddictionsMainViewModel @Inject constructor(
 
     private var lastDeletedAddiction: AddictionUI? = null
 
-    suspend fun deleteAddiction(addiction: AddictionUI) {
-        deleteAddictionUseCase.get().invoke(addiction)
-        lastDeletedAddiction = addiction
+    fun deleteAddiction(addiction: AddictionUI) {
+        viewModelScope.launch {
+            deleteAddictionUseCase.get().invoke(addiction)
+            lastDeletedAddiction = addiction
+        }
+
     }
 
-    suspend fun undoDelete() {
-        lastDeletedAddiction?.let {
-            insertAddictionUseCase.get().invoke(it)
+    fun undoDelete() {
+        viewModelScope.launch {
+            lastDeletedAddiction?.let {
+                insertAddictionUseCase.get().invoke(it)
+            }
+            lastDeletedAddiction = null
         }
-        lastDeletedAddiction = null
     }
 }
 

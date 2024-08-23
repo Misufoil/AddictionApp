@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,45 +68,18 @@ import java.time.format.FormatStyle
 import kotlin.math.roundToInt
 import dev.misufoil.addictions.uikit.R as uikitR
 
-//fun AddictionsHomeScreen(onItemClick: () -> Unit, addButtonClick: () -> Unit
 
-//onItemClick: () -> Unit, addButtonClick: () -> Unit
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddictionsHomeScreen(
     modifier: Modifier = Modifier,
     navigateToAddEdit: (Int) -> Unit,
     navigateToDetails: (Int) -> Unit
 ) {
-    AddictionsHomeScreen(
-        viewModel = hiltViewModel(),
-        modifier = modifier,
-        navigateToAddEdit,
-        navigateToDetails
-    )
-}
 
-@Composable
-internal fun AddictionsHomeScreen(
-    viewModel: AddictionsMainViewModel,
-    modifier: Modifier = Modifier,
-    navigateToAddEdit: (Int) -> Unit,
-    navigateToDetails: (Int) -> Unit
-) {
+    val viewModel: AddictionsMainViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     val currentState = state
-    AddictionsHomeContent(currentState, viewModel, modifier, navigateToAddEdit, navigateToDetails)
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun AddictionsHomeContent(
-    currentState: State,
-    viewModel: AddictionsMainViewModel,
-    modifier: Modifier = Modifier,
-    navigateToAddEdit: (Int) -> Unit,
-    navigateToDetails: (Int) -> Unit
-) {
-
     val snackBarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -122,51 +94,32 @@ private fun AddictionsHomeContent(
                 is State.None -> Unit
                 is State.Error -> ErrorMessage(currentState, modifier)
                 is State.Loading -> ProgressIndicator(currentState, modifier)
-                is State.Success -> Addictions(
+                is State.Success -> AddictionsList(
                     addictionsList = currentState.addictions,
-                    viewModel,
-                    navigateToDetails,
-                    navigateToAddEdit,
-                    snackBarHostState,
-                    modifier
+                    deleteAddiction = { addiction: AddictionUI ->
+                        viewModel.deleteAddiction(
+                            addiction
+                        )
+                    },
+                    undoDelete = { viewModel.undoDelete() },
+                    navigateToDetails = navigateToDetails,
+                    navigateToAddEdit = navigateToAddEdit,
+                    snackBarHostState = snackBarHostState,
+                    modifier = Modifier
                 )
             }
         }
     }
 }
 
-@Composable
-private fun ErrorMessage(state: State.Error, modifier: Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Error during update")
-    }
-}
 
-@Composable
-private fun ProgressIndicator(state: State.Loading, modifier: Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
+@Suppress("NonSkippableComposable")
 @ExperimentalFoundationApi
 @Composable
-private fun Addictions(
-    @PreviewParameter(
-        AddictionsPreviewProvider::class,
-        limit = 1
-    ) addictionsList: List<AddictionUI>,
-    viewModel: AddictionsMainViewModel,
+private fun AddictionsList(
+    addictionsList: List<AddictionUI>,
+    deleteAddiction: (AddictionUI) -> Unit,
+    undoDelete: () -> Unit,
     navigateToDetails: (Int) -> Unit,
     navigateToAddEdit: (Int) -> Unit,
     snackBarHostState: SnackbarHostState,
@@ -176,7 +129,7 @@ private fun Addictions(
     val context = LocalContext.current
 
     LazyColumn {
-        items(addictionsList, key = { it.type }) { addiction ->
+        items(items = addictionsList, key = { item: AddictionUI ->  item.id!! }) { addiction ->
             var boxSize by remember { mutableFloatStateOf(0F) }
             val anchors = DraggableAnchors {
                 HorizontalDragValue.Settled at 0f
@@ -192,14 +145,6 @@ private fun Addictions(
                 )
             }
             SideEffect { state.updateAnchors(anchors) }
-
-//            val iconsBackgroundColor by animateColorAsState(
-//                when (state.targetValue) {
-//                    HorizontalDragValue.Settled -> Color.DarkGray
-//                    HorizontalDragValue.StartToEnd -> Color.Green
-//                    HorizontalDragValue.EndToStart -> Color.Red
-//                }, label = "change color"
-//            )
 
             Card(
                 modifier = modifier
@@ -240,7 +185,7 @@ private fun Addictions(
                             .align(Alignment.CenterEnd)
                             .clickable {
                                 coroutineScope.launch {
-                                    viewModel.deleteAddiction(addiction)
+                                    deleteAddiction(addiction)
                                     snackBarHostState
                                         .showSnackbar(
                                             message = context.getString(uikitR.string.addiction_removed),
@@ -249,7 +194,7 @@ private fun Addictions(
                                         )
                                         .let { result ->
                                             if (result == SnackbarResult.ActionPerformed) {
-                                                viewModel.undoDelete()
+                                                undoDelete()
                                             }
                                         }
                                 }
@@ -293,29 +238,15 @@ private fun Addictions(
 
 @Composable
 internal fun Addiction(
-    @PreviewParameter(
-        AddictionPreviewProvider::class,
-        limit = 1
-    ) addiction: AddictionUI,
+    addiction: AddictionUI,
     navigateToDetails: (Int) -> Unit,
     modifier: Modifier
 ) {
-    // Измените форматтер, чтобы он соответствовал формату addiction.date
-    // val addictionDate = LocalDateTime.parse("${addiction.date}T00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
-//    val date = addiction.date
-//    val time = addiction.time
-//    /val dateTimeString = "${addiction.date} ${addiction.time}"
-
     val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy HH:mm", Locale.getDefault())
-    //val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm", Locale.getDefault())
     val date = LocalDate.parse(addiction.date, dateFormatter)
     val time = LocalTime.parse(addiction.time, timeFormatter)
-
-
     val addictionDate = LocalDateTime.of(date, time)
-//    val addictionDate = LocalDateTime.parse(dateTimeString, dateTimeFormatter)
 
     Row(
         modifier = modifier.clickable {
@@ -327,10 +258,6 @@ internal fun Addiction(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-//                    .background(color = Color.Gray, shape = RoundedCornerShape(8.dp))
-//                    .clickable {
-//                        navigateToDetails(addiction.type.description)
-//                    }
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -379,43 +306,4 @@ fun Example(navigateTo: (Int) -> Unit) {
             tint = AddictionTheme.colorScheme.onPrimaryContainer
         )
     }
-}
-
-private class AddictionPreviewProvider : PreviewParameterProvider<AddictionUI> {
-    override val values = sequenceOf(
-        AddictionUI(
-            id = 1,
-            "stringResource(id = s)",
-            "LocalDate.now()",
-            "LocalTime.now()",
-            3,
-            20
-        ),
-        AddictionUI(
-            id = 2,
-            "AddictionTypes.ALCOHOL",
-            "LocalDate.now()",
-            "LocalTime.now()",
-            2,
-            1
-        ),
-        AddictionUI(
-            id = 3,
-            "AddictionTypes.DRUGS",
-            "LocalDate.now()",
-            "LocalTime.now()",
-            1,
-            1
-        )
-    )
-
-}
-
-private class AddictionsPreviewProvider : PreviewParameterProvider<List<AddictionUI>> {
-
-    private val addictionProvider = AddictionPreviewProvider()
-
-    override val values = sequenceOf(
-        addictionProvider.values.toList()
-    )
 }

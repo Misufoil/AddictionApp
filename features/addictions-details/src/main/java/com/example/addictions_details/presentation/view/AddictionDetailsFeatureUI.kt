@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,9 +21,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,29 +53,15 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import dev.misufoil.addictions.uikit.R as uikitR
 
+
 @ExperimentalFoundationApi
 @Composable
-fun AddictionDetailsScreen(
+public fun AddictionDetailsScreen(
     modifier: Modifier = Modifier,
     navigateToAddEdit: (String) -> Unit,
     onPopBackStack: () -> Boolean,
 ) {
-    AddictionAddEditScreen(
-        viewModel = hiltViewModel(),
-        navigateToAddEdit = navigateToAddEdit,
-        onPopBackStack = onPopBackStack,
-        modifier = modifier
-    )
-}
-
-@ExperimentalFoundationApi
-@Composable
-private fun AddictionAddEditScreen(
-    viewModel: AddictionDetailsViewModel,
-    navigateToAddEdit: (String) -> Unit,
-    onPopBackStack: () -> Boolean,
-    modifier: Modifier
-) {
+    val viewModel: AddictionDetailsViewModel = hiltViewModel()
     val currentState = viewModel.state
     val coroutineScope = rememberCoroutineScope()
 
@@ -91,11 +73,10 @@ private fun AddictionAddEditScreen(
             is State.Error -> ErrorMessage(currentState, padding)
             is State.Loading -> ProgressIndicator(currentState, padding)
             is State.Success -> AddictionScreen(
-                currentState.addiction,
-                viewModel,
-                navigateToAddEdit,
-                onPopBackStack,
-                padding
+                addiction = currentState.addiction,
+                showDeleteDialog = { viewModel.showDeleteDialog() },
+                navigateToAddEdit = navigateToAddEdit,
+                padding = padding
             )
         }
 
@@ -119,9 +100,8 @@ private fun AddictionAddEditScreen(
 @Composable
 private fun AddictionScreen(
     addiction: AddictionUI,
-    viewModel: AddictionDetailsViewModel,
+    showDeleteDialog: () -> Unit,
     navigateToAddEdit: (String) -> Unit,
-    onPopBackStack: () -> Boolean,
     padding: PaddingValues
 ) {
     Column(
@@ -131,7 +111,6 @@ private fun AddictionScreen(
         val coroutineScope = rememberCoroutineScope()
 
         InfoSlider(addiction)
-
         SavingsScreen()
 
         Row(
@@ -141,7 +120,7 @@ private fun AddictionScreen(
             ElevatedButton(
                 modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
                 onClick = {
-                    navigateToAddEdit(viewModel.state.addiction?.id.toString())
+                    navigateToAddEdit(addiction.id.toString())
                 },
             ) {
                 Icon(
@@ -156,7 +135,7 @@ private fun AddictionScreen(
                 modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
                 onClick = {
                     coroutineScope.launch {
-                        viewModel.showDeleteDialog()
+                        showDeleteDialog()
                     }
                 },
                 colors = ButtonDefaults.elevatedButtonColors(
@@ -183,7 +162,7 @@ fun SavingsScreen() {
             .padding(16.dp)
     ) {
         Text(
-            text = "На сегодняшний день сэкономлено",
+            text = stringResource(uikitR.string.overall_saving),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -206,7 +185,7 @@ fun SavingsScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Сэкономлено денег",
+                        text = stringResource(uikitR.string.money_saved),
                         style = AddictionTheme.typography.titleMedium
                     )
                     Text(
@@ -215,13 +194,13 @@ fun SavingsScreen() {
                         color = AddictionTheme.colorScheme.primary
                     )
                 }
-                Spacer(modifier = Modifier.padding(vertical = 8.dp).size(1.dp))
+                Spacer(modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth().size(1.dp).background(MaterialTheme.colorScheme.onSurface))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Сэкономленные калории",
+                        text = stringResource(uikitR.string.calories_saved),
                         style = AddictionTheme.typography.titleMedium
                     )
                     Text(
@@ -361,36 +340,6 @@ class AddictionUIPreviewParameterProvider : PreviewParameterProvider<AddictionUI
             timesInDay = 2
         )
     )
-}
-
-
-@Composable
-private fun ErrorMessage(state: State.Error, padding: PaddingValues) {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .padding(padding),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Error during update ${state.addiction?.type}")
-    }
-}
-
-@Composable
-private fun ProgressIndicator(
-    state: State.Loading,
-    padding: PaddingValues
-) {
-    Column(modifier = Modifier.padding(padding)) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator()
-        }
-    }
 }
 
 

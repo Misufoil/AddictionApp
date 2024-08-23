@@ -1,6 +1,9 @@
 package dev.misufoil.addictions_home.models
 
-data class AddictionUI(
+import androidx.compose.runtime.Immutable
+
+@Immutable
+internal data class AddictionUI(
     val id: Int?,
     val type: String,
     val date: String,

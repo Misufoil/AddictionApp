@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,20 +33,6 @@ import com.example.addictions_edit.presentation.viewmodel.State
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.core_utils.date_time_utils.convertStringDateTimeToLong
 import dev.misufoil.addictions.uikit.R as uikitR
-
-
-//@ExperimentalMaterial3Api
-//@Composable
-//fun AddictionAddEditScreen(
-//    onPopBackStack: () -> Boolean,
-//    modifier: Modifier = Modifier
-//) {
-//    AddictionAddEditScreen(
-//        viewModel = hiltViewModel(),
-//        modifier = modifier,
-//        onPopBackStack
-//    )
-//}
 
 @ExperimentalMaterial3Api
 @Composable
@@ -117,42 +105,50 @@ private fun AddictionScreen(
 ) {
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(padding),
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
         horizontalAlignment = Alignment.Start,
     ) {
-        TypeComponent(
-            addictionUiState.type,
-            updateBottomSheetState,
-        )
-
-        DateAndTimeComponent(
-            updateDateDialogState,
-            updateTimeDialogState,
-            addictionUiState.date,
-            addictionUiState.time,
-        )
-
-        FrequencyOfUseComponent(
-            onDaysPerWeekChange,
-            onTimesInDayChange,
-            addictionUiState.daysPerWeek,
-            addictionUiState.timesInDay,
-        )
-
-        ElevatedButton(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-
-            onClick = {
-                onSaveButtonClick()
-            },
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_save_24),
-                contentDescription = stringResource(id = uikitR.string.save_addiction)
+        item {
+            TypeComponent(
+                addictionUiState.type,
+                updateBottomSheetState,
             )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.save_button))
+        }
+        item {
+            DateAndTimeComponent(
+                updateDateDialogState,
+                updateTimeDialogState,
+                addictionUiState.date,
+                addictionUiState.time,
+            )
+        }
+        item {
+            FrequencyOfUseComponent(
+                onDaysPerWeekChange,
+                onTimesInDayChange,
+                addictionUiState.daysPerWeek,
+                addictionUiState.timesInDay,
+            )
+        }
+        item {
+            ElevatedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                onClick = {
+                    onSaveButtonClick()
+                },
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(uikitR.drawable.baseline_save_24),
+                    contentDescription = stringResource(id = uikitR.string.save_addiction)
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(stringResource(id = dev.misufoil.addictions.uikit.R.string.save_button))
+            }
         }
     }
 
