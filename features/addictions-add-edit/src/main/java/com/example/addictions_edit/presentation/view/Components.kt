@@ -25,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -34,6 +33,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.core_utils.models.AddictionTypes
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import dev.misufoil.addictions.uikit.R as uikitR
@@ -74,7 +75,7 @@ internal fun TypeComponent(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large)
+            .shadow(elevation = 3.dp, shape = AddictionTheme.shapes.large)
             .clickable {
                 updateBottomSheetState(true)
             },
@@ -116,7 +117,7 @@ internal fun DateAndTimeComponent(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large)
+            .shadow(elevation = 3.dp, shape = AddictionTheme.shapes.large)
             .clickable {
                 updateDateDialogState(true)
             },
@@ -145,7 +146,7 @@ internal fun DateAndTimeComponent(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large)
+            .shadow(elevation = 3.dp, shape = AddictionTheme.shapes.large)
             .clickable {
                 updateTimeDialogState(true)
             },
@@ -187,7 +188,7 @@ internal fun FrequencyOfUseComponent(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large),
+            .shadow(elevation = 3.dp, shape = AddictionTheme.shapes.large),
         colors = CardDefaults.cardColors(
             containerColor = AddictionTheme.colorScheme.surfaceVariant,
         ),
@@ -237,7 +238,7 @@ internal fun FrequencyOfUseComponent(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.large),
+            .shadow(elevation = 3.dp, shape = AddictionTheme.shapes.large),
         colors = CardDefaults.cardColors(
             containerColor = AddictionTheme.colorScheme.surfaceVariant,
         ),
@@ -283,6 +284,174 @@ internal fun FrequencyOfUseComponent(
     }
 }
 
+@Composable
+internal fun SavingsScreen(
+    onMoneyPerDayChange: (String) -> Unit,
+    onCaloriesPerDayChange: (String) -> Unit,
+    moneyPerDay: String,
+    caloriesPerDay: String
+) {
+
+    var moneyInput by remember { mutableStateOf(moneyPerDay) }
+    var caloriesInput by remember { mutableStateOf(caloriesPerDay) }
+    var showErrorMoney by remember { mutableStateOf(false) }
+    var showErrorCalories by remember { mutableStateOf(false) }
+
+    val maxChar = 10
+
+    // Debounce for money input
+    LaunchedEffect(moneyInput) {
+        delay(500)  // Wait for 500ms before processing input
+        if (moneyInput.isNotEmpty()) {
+            showErrorMoney = try {
+                moneyInput.toDouble()
+                onMoneyPerDayChange(moneyInput)
+                false
+            } catch (e: NumberFormatException) {
+                true
+            }
+        }
+    }
+
+    // Debounce for calories input
+    LaunchedEffect(caloriesInput) {
+        delay(500)  // Wait for 500ms before processing input
+        if (caloriesInput.isNotEmpty()) {
+            showErrorCalories = try {
+                caloriesInput.toDouble()
+                onCaloriesPerDayChange(caloriesInput)
+                false
+            } catch (e: NumberFormatException) {
+                true
+            }
+        }
+    }
+
+    Text(
+        text = stringResource(id = uikitR.string.frequency_of_use),
+        modifier = Modifier.padding(8.dp),
+        style = AddictionTheme.typography.headlineSmall
+    )
+
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = AddictionTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        OutlinedTextField(
+            singleLine = true,
+            value = moneyInput,
+            onValueChange = {
+                if (it.length <= maxChar) {
+                    moneyInput = it
+                }
+            },
+            label = { Text(stringResource(uikitR.string.money_per_day)) },
+            trailingIcon = {
+                if (moneyInput.isNotEmpty()) {
+                    IconButton(onClick = { moneyInput = "0.0" }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = null
+                        )
+                    }
+                } else {
+                    Icon(
+                        painter = painterResource(id = uikitR.drawable.baseline_keyboard_arrow_down_24),
+                        tint = AddictionTheme.colorScheme.outline,
+                        contentDescription = null
+                    )
+                }
+            },
+            shape = AddictionTheme.shapes.large,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = AddictionTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = AddictionTheme.colorScheme.surfaceVariant,
+            ),
+            isError = showErrorMoney,
+            supportingText = {
+                if (showErrorMoney) {
+                    Text(
+                        text = stringResource(uikitR.string.invalid_input_error),
+                        color = AddictionTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Start,
+                    )
+                } else {
+                    Text(
+                        text = "${moneyInput.length} / $maxChar",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                    )
+                }
+            }
+        )
+
+        OutlinedTextField(
+            singleLine = true,
+            value = caloriesInput,
+            onValueChange = {
+                if (it.length <= maxChar) {
+                    caloriesInput = it
+                }
+            },
+            label = { Text(stringResource(uikitR.string.calories_per_day)) },
+            trailingIcon = {
+                if (caloriesInput.isNotEmpty()) {
+                    IconButton(onClick = { caloriesInput = "0.0" }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = null
+                        )
+                    }
+                } else {
+                    Icon(
+                        painter = painterResource(id = uikitR.drawable.baseline_keyboard_arrow_down_24),
+                        tint = AddictionTheme.colorScheme.outline,
+                        contentDescription = null
+                    )
+                }
+            },
+            shape = AddictionTheme.shapes.large,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = AddictionTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = AddictionTheme.colorScheme.surfaceVariant,
+            ),
+            isError = showErrorCalories,
+            supportingText = {
+                if (showErrorCalories) {
+                    Text(
+                        text = stringResource(uikitR.string.invalid_input_error),
+                        color = AddictionTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Start,
+                    )
+                } else {
+                    Text(
+                        text = "${caloriesInput.length} / $maxChar",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                    )
+                }
+            }
+        )
+    }
+}
 
 
 @ExperimentalMaterial3Api
@@ -344,7 +513,7 @@ internal fun ModalBottomSheetComponent(
                                         .fillMaxWidth()
                                         .shadow(
                                             elevation = 1.dp,
-                                            shape = MaterialTheme.shapes.medium
+                                            shape = AddictionTheme.shapes.medium
                                         )
                                         .clickable {
                                             coroutineScope.launch {
@@ -412,7 +581,7 @@ internal fun ModalBottomSheetComponent(
                                     if (showError) {
                                         Text(
                                             text = stringResource(uikitR.string.enter_custom_addiction),
-                                            color = MaterialTheme.colorScheme.error,
+                                            color = AddictionTheme.colorScheme.error,
                                             modifier = Modifier.fillMaxWidth(),
                                             textAlign = TextAlign.Start,
                                         )

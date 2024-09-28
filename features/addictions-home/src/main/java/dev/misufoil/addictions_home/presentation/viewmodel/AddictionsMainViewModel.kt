@@ -19,8 +19,8 @@ import javax.inject.Provider
 @HiltViewModel
 internal class AddictionsMainViewModel @Inject constructor(
     getAllAddictionsUseCase: Provider<GetAllAddictionsUseCase>,
-    val deleteAddictionUseCase: Provider<DeleteAddictionUseCase>,
-    val insertAddictionUseCase: Provider<InsertAddictionUseCase>,
+    private val deleteAddictionUseCase: Provider<DeleteAddictionUseCase>,
+    private val insertAddictionUseCase: Provider<InsertAddictionUseCase>,
 ) : ViewModel() {
 
     val state: StateFlow<State> = getAllAddictionsUseCase.get().invoke()

@@ -10,6 +10,8 @@ internal data class AddictionUI(
     val time: String,
     val daysPerWeek: Int,
     val timesInDay: Int,
+    val moneyPerDay: Double,
+    val caloriesPerDay: Double,
 ) {
     companion object {
         val empty = AddictionUI(
@@ -19,6 +21,8 @@ internal data class AddictionUI(
             time = "",
             daysPerWeek = 0,
             timesInDay = 0,
+            moneyPerDay = 0.0,
+            caloriesPerDay = 0.0,
         )
     }
 }

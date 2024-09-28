@@ -61,6 +61,8 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+    implementation(libs.core.splashscreen)
+
     implementation(project(":addictions-data"))
     implementation(project(":database"))
     implementation(project(":core-utils"))

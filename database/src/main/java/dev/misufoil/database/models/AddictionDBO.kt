@@ -11,5 +11,7 @@ data class AddictionDBO(
     @ColumnInfo("date") val date: String,
     @ColumnInfo("time") val time: String,
     @ColumnInfo("daysPerWeek") val daysPerWeek: Int,
-    @ColumnInfo("timesInDay") val timesInDay: Int
+    @ColumnInfo("timesInDay") val timesInDay: Int,
+    @ColumnInfo("moneyPerDay") val moneyPerDay: Double,
+    @ColumnInfo("caloriesPerDay") val caloriesPerDay: Double,
 )

@@ -10,29 +10,21 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -49,25 +41,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.misufoil.addictions.CustomCircularProgressIndicator
 import dev.misufoil.addictions.theme.AddictionTheme
 import dev.misufoil.addictions_home.models.AddictionUI
 import dev.misufoil.addictions_home.presentation.viewmodel.AddictionsMainViewModel
 import dev.misufoil.addictions_home.presentation.viewmodel.State
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import kotlin.math.roundToInt
 import dev.misufoil.addictions.uikit.R as uikitR
 
+private enum class HorizontalDragValue { Settled, StartToEnd, EndToStart }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -84,7 +69,7 @@ fun AddictionsHomeScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) },
-        floatingActionButton = { Example(navigateToAddEdit) }
+        floatingActionButton = { FAB(navigateToAddEdit) }
     ) {
         Column(
             modifier = modifier
@@ -129,7 +114,7 @@ private fun AddictionsList(
     val context = LocalContext.current
 
     LazyColumn {
-        items(items = addictionsList, key = { item: AddictionUI ->  item.id!! }) { addiction ->
+        items(items = addictionsList, key = { item: AddictionUI -> item.id!! }) { addiction ->
             var boxSize by remember { mutableFloatStateOf(0F) }
             val anchors = DraggableAnchors {
                 HorizontalDragValue.Settled at 0f
@@ -150,7 +135,7 @@ private fun AddictionsList(
                 modifier = modifier
                     .padding(8.dp)
                     .fillMaxWidth()
-                    .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.large)
+                    .shadow(elevation = 2.dp, shape = AddictionTheme.shapes.large)
                     .animateItemPlacement(),
                 colors = CardDefaults.cardColors(
                     containerColor = AddictionTheme.colorScheme.surfaceVariant,
@@ -233,77 +218,5 @@ private fun AddictionsList(
                 }
             }
         }
-    }
-}
-
-@Composable
-internal fun Addiction(
-    addiction: AddictionUI,
-    navigateToDetails: (Int) -> Unit,
-    modifier: Modifier
-) {
-    val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    val date = LocalDate.parse(addiction.date, dateFormatter)
-    val time = LocalTime.parse(addiction.time, timeFormatter)
-    val addictionDate = LocalDateTime.of(date, time)
-
-    Row(
-        modifier = modifier.clickable {
-            addiction.id?.let { navigateToDetails(it) }
-        },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                text = addiction.type,
-                style = MaterialTheme.typography.headlineLarge,
-                maxLines = 3
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-
-            Text(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                text = addiction.date,
-                style = MaterialTheme.typography.headlineSmall,
-                maxLines = 2
-            )
-        }
-
-        CustomCircularProgressIndicator(
-            modifier = Modifier
-                .padding(2.dp)
-                .size(120.dp),
-            initialValue = addictionDate,
-            circleColor = AddictionTheme.colorScheme.primary,
-            secondaryCircleColor = MaterialTheme.colorScheme.secondary,
-            circleRadius = 130f,
-            textStyleInCircle = MaterialTheme.typography.bodyLarge,
-            textStyleUnderCircle = MaterialTheme.typography.bodyLarge,
-            smallCircle = true,
-            onPositionChange = {}
-        )
-    }
-}
-
-private enum class HorizontalDragValue { Settled, StartToEnd, EndToStart }
-
-@Composable
-fun Example(navigateTo: (Int) -> Unit) {
-    FloatingActionButton(
-        onClick = {
-            navigateTo(-1)
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Add,
-            contentDescription = "Floating action button",
-            tint = AddictionTheme.colorScheme.onPrimaryContainer
-        )
     }
 }

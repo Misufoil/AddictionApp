@@ -78,8 +78,8 @@
     <string name="money_saved">"Сэкономлено денег"</string>
     <string name="calories_saved">"Сэкономленные калории"</string>
 
-    <string name="money_per_day">"Начало моей трезвой жизни"</string>
-    <string name="calories_per_day">"Начало моей трезвой жизни"</string>
+    <string name="money_per_day">"Денежные траты в день"</string>
+    <string name="calories_per_day">"Калории, потребленные за день"</string>
 
     <string name="invalid_input_error">"Пожалуйста, введите число"</string>
 </resources>

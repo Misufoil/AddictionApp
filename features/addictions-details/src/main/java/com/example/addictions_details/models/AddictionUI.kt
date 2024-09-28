@@ -6,6 +6,8 @@ data class AddictionUI(
     val date: String,
     val time: String,
     val daysPerWeek: Int,
-    val timesInDay: Int
+    val timesInDay: Int,
+    val moneyPerDay: Double,
+    val caloriesPerDay: Double,
 )
 

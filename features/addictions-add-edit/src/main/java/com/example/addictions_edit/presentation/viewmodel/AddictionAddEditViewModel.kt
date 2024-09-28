@@ -63,6 +63,8 @@ internal class AddictionAddEditViewModel @Inject constructor(
                 time = getCurrentTimeString(),
                 daysPerWeek = 1,
                 timesInDay = 1,
+                moneyPerDay = 0.0,
+                caloriesPerDay = 0.0,
             )
 
             _uiState.update { startUi }
@@ -130,6 +132,18 @@ internal class AddictionAddEditViewModel @Inject constructor(
     fun onTimesInDayChange(timesInDay: Int) {
         _uiState.update {
             it.copy(timesInDay = timesInDay)
+        }
+    }
+
+    fun onMoneyPerDayChange(money: String) {
+        _uiState.update {
+            it.copy(moneyPerDay = money.toDouble())
+        }
+    }
+
+    fun onCaloriesPerDayChange(calories: String) {
+        _uiState.update {
+            it.copy(caloriesPerDay = calories.toDouble())
         }
     }
 

@@ -12,6 +12,10 @@ import com.example.addictions_details.usecase.GetAddictionByTypeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.misufoil.addictions_data.RequestResult
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -26,6 +30,12 @@ internal class AddictionDetailsViewModel @Inject constructor(
         private set
 
     var showDeleteDialog by mutableStateOf(false)
+        private set
+
+    var totalMoneySaved: Double = 0.0
+        private set
+
+    var totalCaloriesSaved: Double = 0.0
         private set
 
     init {
@@ -61,7 +71,16 @@ internal class AddictionDetailsViewModel @Inject constructor(
     }
 
     private fun initUi(data: AddictionUI) {
+        val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+        val startDate = LocalDate.parse(data.date, formatter)
+        val currentDate = LocalDate.now()
+        val daysPassed = ChronoUnit.DAYS.between(startDate, currentDate).toInt()
 
+        // Вычисление сэкономленных денег и калорий
+        totalMoneySaved = daysPassed * data.moneyPerDay
+        totalCaloriesSaved = daysPassed * data.caloriesPerDay
+
+        state = State.Success(data)
     }
 }
 

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b82067db29a5479e0a823f955b21ff3e",
+    "identityHash": "997582fb00a99ed4602ef2ec5206af73",
     "entities": [
       {
         "tableName": "AddictionDBO",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `type` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `daysPerWeek` INTEGER NOT NULL, `timesInDay` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `type` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `daysPerWeek` INTEGER NOT NULL, `timesInDay` INTEGER NOT NULL, `moneyPerDay` REAL NOT NULL, `caloriesPerDay` REAL NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -43,6 +43,18 @@
             "columnName": "timesInDay",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "moneyPerDay",
+            "columnName": "moneyPerDay",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesPerDay",
+            "columnName": "caloriesPerDay",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -58,7 +70,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b82067db29a5479e0a823f955b21ff3e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '997582fb00a99ed4602ef2ec5206af73')"
     ]
   }
 }

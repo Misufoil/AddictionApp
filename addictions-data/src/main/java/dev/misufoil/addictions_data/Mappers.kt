@@ -10,7 +10,9 @@ internal fun AddictionDBO.toAddiction(): Addiction {
         date = date,
         time = time,
         daysPerWeek = daysPerWeek,
-        timesInDay = timesInDay
+        timesInDay = timesInDay,
+        moneyPerDay = moneyPerDay,
+        caloriesPerDay = caloriesPerDay,
     )
 }
 
@@ -21,6 +23,8 @@ internal fun Addiction.toAddictionDBO(): AddictionDBO {
         date = date,
         time = time,
         daysPerWeek = daysPerWeek,
-        timesInDay = timesInDay
+        timesInDay = timesInDay,
+        moneyPerDay = moneyPerDay,
+        caloriesPerDay = caloriesPerDay,
     )
 }

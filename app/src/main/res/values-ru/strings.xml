@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AddictionApp</string>
+        <style name="AddictionTheme.App.Starting" parent="Theme.SplashScreen">
+            <item name="windowSplashScreenBackground">#202020</item>
+            <item name="windowSplashScreenAnimatedIcon">@drawable/baseline_remove_24</item>
+            <item name="postSplashScreenTheme">@style/Theme.AddictionApp</item>
+        </style>
 </resources>

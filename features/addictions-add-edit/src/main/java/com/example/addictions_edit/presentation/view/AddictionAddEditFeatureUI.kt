@@ -3,7 +3,6 @@ package com.example.addictions_edit.presentation.view
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -69,6 +67,8 @@ fun AddictionAddEditScreen(
                 onTypeChange = { type: String -> viewModel.onTypeChange(type) },
                 onDateChange = { date: Long -> viewModel.onDateChange(date) },
                 onTimeChange = { time: Pair<Int, Int> -> viewModel.onTimeChange(time) },
+                onMoneyPerDayChange = { money: String -> viewModel.onMoneyPerDayChange(money) },
+                onCaloriesPerDayChange = { calories: String -> viewModel.onCaloriesPerDayChange(calories) },
                 onToastMessageStateChange = { toast: String? ->
                     viewModel.onToastMessageStateChange(
                         toast
@@ -100,6 +100,8 @@ private fun AddictionScreen(
     onTypeChange: (String) -> Unit,
     onDateChange: (Long) -> Unit,
     onTimeChange: (Pair<Int, Int>) -> Unit,
+    onMoneyPerDayChange: (String) -> Unit,
+    onCaloriesPerDayChange: (String) -> Unit,
     onToastMessageStateChange: (String?) -> Unit,
     onSaveButtonClick: () -> Unit
 ) {
@@ -131,6 +133,14 @@ private fun AddictionScreen(
                 onTimesInDayChange,
                 addictionUiState.daysPerWeek,
                 addictionUiState.timesInDay,
+            )
+        }
+        item {
+            SavingsScreen(
+                onMoneyPerDayChange,
+                onCaloriesPerDayChange,
+                addictionUiState.moneyPerDay.toString(),
+                addictionUiState.caloriesPerDay.toString(),
             )
         }
         item {

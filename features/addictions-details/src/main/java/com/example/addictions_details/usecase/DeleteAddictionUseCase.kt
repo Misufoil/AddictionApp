@@ -21,7 +21,9 @@ internal fun AddictionUI.toAddiction(): Addiction {
         date = date,
         time = time,
         daysPerWeek = daysPerWeek,
-        timesInDay = timesInDay
+        timesInDay = timesInDay,
+        moneyPerDay = moneyPerDay,
+        caloriesPerDay = caloriesPerDay,
     )
 }
 

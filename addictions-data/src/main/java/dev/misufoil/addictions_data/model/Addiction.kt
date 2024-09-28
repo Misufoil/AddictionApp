@@ -7,4 +7,6 @@ data class Addiction(
     val time: String,
     val daysPerWeek: Int,
     val timesInDay: Int,
+    val moneyPerDay: Double,
+    val caloriesPerDay: Double,
 )
