@@ -59,11 +59,6 @@ import dev.misufoil.addictions_home.presentation.viewmodel.State
 import dev.misufoil.core_utils.CustomCircularProgressIndicator
 import dev.misufoil.core_utils.date_time_utils.stringDateTimeToLocalDateTime
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import kotlin.math.roundToInt
 import dev.misufoil.addictions.uikit.R as uikitR
 

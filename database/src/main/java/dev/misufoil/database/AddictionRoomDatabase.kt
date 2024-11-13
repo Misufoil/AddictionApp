@@ -14,7 +14,6 @@ class AddictionDatabase internal constructor(private val database: AddictionRoom
 }
 
 @Database(entities = [AddictionDBO::class], version = 1)
-@TypeConverters(Converters::class)
 internal abstract class AddictionRoomDatabase : RoomDatabase() {
 
     abstract fun addictionsDao(): AddictionDao

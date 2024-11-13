@@ -1,7 +1,6 @@
 package dev.misufoil.core_utils.models
 
 import android.content.Context
-import javax.inject.Inject
 
 
 enum class AddictionTypes(val descriptionResId: Int) {

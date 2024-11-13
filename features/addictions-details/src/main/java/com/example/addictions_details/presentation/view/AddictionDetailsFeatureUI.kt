@@ -56,7 +56,7 @@ import dev.misufoil.addictions.uikit.R as uikitR
 
 @ExperimentalFoundationApi
 @Composable
-public fun AddictionDetailsScreen(
+fun AddictionDetailsScreen(
     modifier: Modifier = Modifier,
     navigateToAddEdit: (String) -> Unit,
     onPopBackStack: () -> Boolean,
@@ -120,7 +120,7 @@ private fun AddictionScreen(
             ElevatedButton(
                 modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1F),
                 onClick = {
-                    navigateToAddEdit(addiction.id.toString())
+                    navigateToAddEdit(addiction.id)
                 },
             ) {
                 Icon(

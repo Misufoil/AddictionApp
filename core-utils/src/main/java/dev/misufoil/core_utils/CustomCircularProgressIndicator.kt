@@ -87,8 +87,6 @@ fun CustomCircularProgressIndicator(
         stringResource(id = uikitR.string.goal_achieved)
     }
 
-    var textSize by remember { mutableStateOf(24.sp) }
-
     Column {
         Box(
             modifier = modifier
