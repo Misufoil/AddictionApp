@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="goal_days">Цель: %1$d дней</string>
+    <string name="goal_achieved">Цель достигнута</string>
+
+    <string name="save_button">Сохранить</string>
+    <string name="edit_button">Изменить</string>
+    <string name="delete_button">Удалить</string>
+    <string name="delete_quation">Удалить зависимость?</string>
+
+    <string name="select_addiction">От какой зависимости вы избавляетесь?</string>
+    <string name="date_and_time">Дата и время отказа</string>
+    <string name="frequency_of_use">Частота употребления</string>
+
+    <string name="days_per_week">Дней в неделю:</string>
+    <string name="once_a_day">Кол-во раз в день:</string>
+
+    <string name="increase_days">Увеличить количество дней</string>
+    <string name="reduce_days">"Уменьшить количество дней</string>
+
+    <string name="increase_times">Увеличить количество раз</string>
+    <string name="reduce_times">Уменьшить количество раз</string>
+
+    <string name="time_not_come">Выбранное время еще не наступило</string>
+
+    <string name="input_mode">Переключить в режим ввода</string>
+    <string name="selection_mode">Переключить в режим выбора</string>
+
+    <string name="save_addiction">Сохранить привычку</string>
+    <string name="edit_addiction">Редактировать привычку</string>
+    <string name="delete_addiction">Удалить привычку</string>
+
+    //date picker
+    <string name="select_date">Выберите дату</string>
+    <string name="select_time">Выберите время</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+
+    <string name="alcohol">Алкоголь</string>
+    <string name="vaping">Вейп</string>
+    <string name="junk_food">Вредная пища</string>
+    <string name="caffeine">Кофеин</string>
+    <string name="masturbation">Мастурбация</string>
+    <string name="drugs">Наркотики</string>
+    <string name="nicotine">Никотин</string>
+    <string name="gambling">Азартные игры</string>
+    <string name="internet">Интернет</string>
+    <string name="pornography">Порнография</string>
+    <string name="sex">Секс</string>
+    <string name="cigarettes">Сигареты</string>
+    <string name="sugar">Сахар</string>
+    <string name="tobacco">Табак</string>
+    <string name="food">Еда</string>
+    <string name="shopping">Шоппинг</string>
+    <string name="work">Работа</string>
+    <string name="video_games">Видео игры</string>
+    <string name="energy_drinks">Энергетические напитки</string>
+
+    <string name="addiction_exists_error">Зависимость с таким названием уже существует.</string>
+
+    <string name="predefined_list">Список</string>
+    <string name="custom_input">Ввод</string>
+    <string name="your_addiction">Ваша зависимость</string>
+    <string name="enter_custom_addiction">Пожалуйста, введите зависимость</string>
+
+    <string name="D">Д</string>
+    <string name="H">Ч</string>
+    <string name="M">М</string>
+    <string name="S">С</string>
+
+    <string name="addiction_removed">Зависимость удалена</string>
+
+    <string name="start_sober">"Начало моей трезвой жизни"</string>
+
+
+    <string name="overall_saving">"На сегодняшний день сэкономлено"</string>
+
+    <string name="money_saved">"Сэкономлено денег"</string>
+    <string name="calories_saved">"Сэкономленные калории"</string>
+
+    <string name="money_per_day">"Начало моей трезвой жизни"</string>
+    <string name="calories_per_day">"Начало моей трезвой жизни"</string>
+
+    <string name="invalid_input_error">"Пожалуйста, введите число"</string>
+</resources>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="goal_days">Goal: %1$d days</string>
+    <string name="goal_achieved">Goal achieved</string>
+
+    <string name="save_button">Save</string>
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
+    <string name="delete_quation">Delete the addiction?</string>
+
+    <string name="select_addiction">What addiction are you getting rid of?</string>
+    <string name="date_and_time">Date and time of quitting</string>
+    <string name="frequency_of_use">Frequency of use</string>
+
+    <string name="days_per_week">Days per week:</string>
+    <string name="once_a_day">Once a day:</string>
+
+    <string name="increase_days">Increase the number of days</string>
+    <string name="reduce_days">Reduce the number of days</string>
+
+    <string name="increase_times">Increase the number of times</string>
+    <string name="reduce_times">Reduce the number of times</string>
+
+    <string name="time_not_come">The chosen time has not yet come</string>
+
+    <string name="input_mode">Switch to input mode</string>
+    <string name="selection_mode">Switch to selection mode</string>
+
+    <string name="save_addiction">Save addiction</string>
+    <string name="edit_addiction">Edit addiction</string>
+    <string name="delete_addiction">Delete addiction</string>
+
+    //date and time picker
+    <string name="select_date">Select date</string>
+    <string name="select_time">Select time</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="alcohol">Alcohol</string>
+    <string name="vaping">Vaping</string>
+    <string name="junk_food">Junk food</string>
+    <string name="caffeine">Caffeine</string>
+    <string name="masturbation">Masturbation</string>
+    <string name="drugs">Drugs</string>
+    <string name="nicotine">Nicotine</string>
+    <string name="gambling">Gambling</string>
+    <string name="internet">Internet</string>
+    <string name="pornography">Pornography</string>
+    <string name="sex">Sex</string>
+    <string name="cigarettes">Cigarettes</string>
+    <string name="sugar">Sugar</string>
+    <string name="tobacco">Tobacco</string>
+    <string name="food">Food</string>
+    <string name="shopping">Shopping</string>
+    <string name="work">Work</string>
+    <string name="video_games">Video games</string>
+    <string name="energy_drinks">Energy drinks</string>
+
+    <string name="addiction_exists_error">A addiction with that name already exists.</string>
+
+    <string name="predefined_list">List</string>
+    <string name="custom_input">Input</string>
+    <string name="your_addiction">Your addiction</string>
+    <string name="enter_custom_addiction">Please enter a addiction</string>
+
+    <string name="D">D</string>
+    <string name="H">H</string>
+    <string name="M">M</string>
+    <string name="S">S</string>
+
+    <string name="addiction_removed">Addiction removed</string>
+
+    <string name="start_sober">"Start date of my sober life"</string>
+
+
+    <string name="overall_saving">"Overall saving"</string>
+
+    <string name="money_saved">"Money saved"</string>
+    <string name="calories_saved">"Calories saved"</string>
+
+    <string name="money_per_day">"Money spent per day"</string>
+    <string name="calories_per_day">"Calories consumed per day"</string>
+
+    <string name="invalid_input_error">"Please enter a number"</string>
+</resources>
