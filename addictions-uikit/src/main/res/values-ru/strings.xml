@@ -82,4 +82,6 @@
     <string name="calories_per_day">"Начало моей трезвой жизни"</string>
 
     <string name="invalid_input_error">"Пожалуйста, введите число"</string>
+
+    <string name="notif_text">Поздравляем, вы свободны от зависимости уже %1$s дней!</string>
 </resources>

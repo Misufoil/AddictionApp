@@ -18,7 +18,7 @@ import dev.misufoil.addictions.uikit.R as uikitR
 
 @HiltWorker
 class AchievementNotificationWorker @AssistedInject constructor(
-    @Assisted context: Context,
+    @Assisted val context: Context,
     @Assisted workerParams: WorkerParameters,
     private val notificationManagerCompat: NotificationManagerCompat,
     private val mainActivityIntentRouter: MainActivityIntentRouter
@@ -58,7 +58,7 @@ class AchievementNotificationWorker @AssistedInject constructor(
         val notification = NotificationCompat.Builder(applicationContext, "addiction_channel")
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentText("Congratulations, you have been free from addiction for $duration days")
+            .setContentText(context.getString(uikitR.string.notif_text, duration))
             .setContentTitle(title)
             .setSmallIcon(uikitR.drawable.baseline_celebration_24)
             .setAutoCancel(true)

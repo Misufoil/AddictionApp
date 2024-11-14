@@ -70,16 +70,17 @@
 
     <string name="addiction_removed">Addiction removed</string>
 
-    <string name="start_sober">"Start date of my sober life"</string>
+    <string name="start_sober">Start date of my sober life</string>
 
+    <string name="overall_saving">Overall saving</string>
 
-    <string name="overall_saving">"Overall saving"</string>
+    <string name="money_saved">Money saved</string>
+    <string name="calories_saved">Calories saved</string>
 
-    <string name="money_saved">"Money saved"</string>
-    <string name="calories_saved">"Calories saved"</string>
+    <string name="money_per_day">Money spent per day</string>
+    <string name="calories_per_day">Calories consumed per day</string>
 
-    <string name="money_per_day">"Money spent per day"</string>
-    <string name="calories_per_day">"Calories consumed per day"</string>
+    <string name="invalid_input_error">Please enter a number</string>
 
-    <string name="invalid_input_error">"Please enter a number"</string>
+    <string name="notif_text">Congratulations, you have been free from addiction for %1$s days!</string>
 </resources>
