@@ -2,9 +2,6 @@
 agp = "8.4.2"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
 androidx-lifecycle = "2.8.3"
 activityCompose = "1.9.0"
 composeBom = "2024.06.00"
@@ -17,20 +14,12 @@ compose-navigation = "2.7.7"
 hilt = "1.2.0"
 
 appcompat = "1.7.0"
-material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.0"
-places = "3.5.0"
 
 work = "2.9.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-
 
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
@@ -52,32 +41,23 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 kotlinx-courutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-courutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 
-
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 jakarta-inject = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
 
 dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 
-dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-dagger-main = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
-
 androidx-hilt = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hilt" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt" }
 androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt" }
 
-
 androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
